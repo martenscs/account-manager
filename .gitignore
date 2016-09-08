@@ -1,0 +1,7 @@
+dist
+node_modules
+typings
+account-manager-source.tar.gz
+account-manager.tar.gz
+account-manager.war
+.idea

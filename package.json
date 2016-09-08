@@ -1,0 +1,65 @@
+{
+  "private": true,
+  "name": "account-manager",
+  "description": "Data Governance Broker sample UI for delegated account management.",
+  "version": "1.0.0-0",
+  "homepage": "https://github.com/UnboundID/account-manager#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/UnboundID/account-manager.git"
+  },
+  "bugs": {
+    "url": "https://github.com/UnboundID/account-manager/issues"
+  },
+  "scripts": {
+    "clean": "rm -Rf dist && mkdir dist && mkdir dist/app && mkdir dist/css && mkdir dist/vendor",
+    "copy-js": "cd node_modules && cp systemjs/dist/system.js systemjs/dist/system.js.map core-js/client/shim.min.js core-js/client/shim.min.js.map zone.js/dist/zone.min.js reflect-metadata/Reflect.js reflect-metadata/Reflect.js.map platform/platform.js ../dist/vendor/",
+    "copy-assets": "cd assets && cleancss -o ../dist/css/ubid-account.min.css css/ubid-account.css && cp -R img ../dist/ && cd ../node_modules && cp bootstrap/dist/css/bootstrap.min.css font-awesome/css/font-awesome.min.css ../dist/vendor/ && cp -R bootstrap/dist/fonts font-awesome/fonts ../dist/ && rm -Rf ../dist/fonts/4.4.0",
+    "lint-ts": "tslint -c tslint.json app/**/*.ts",
+    "compile-ts": "tsc",
+    "bundle-lib": "node bundle-lib.js",
+    "bundle-app": "node bundle-app.js",
+    "build": "npm-run-all clean lint-ts compile-ts bundle-lib bundle-app copy-js copy-assets",
+    "build-app": "npm-run-all lint-ts compile-ts bundle-app",
+    "build-except-app": "npm-run-all clean compile-ts bundle-lib copy-js copy-assets",
+    "watch": "nodemon -V -w app --ext \".ts\" --exec \"npm run build-app\"",
+    "serve-dev": "lite-server -c browser-sync-dev.config.js",
+    "dev": "npm-run-all build-except-app -p watch serve-dev",
+    "serve-test": "lite-server -c browser-sync-test.config.js",
+    "test": "npm-run-all build-except-app -p watch serve-test",
+    "jar": "jar cvf account-manager.war app dist index.html callback.html package.json system.config.js",
+    "prod": "npm run build && rm `find ./dist -name *.spec.js*` && npm run jar",
+    "postinstall": "typings install"
+  },
+  "dependencies": {
+    "@angular/common": "2.0.0",
+    "@angular/compiler": "2.0.0",
+    "@angular/core": "2.0.0",
+    "@angular/platform-browser": "2.0.0",
+    "@angular/platform-browser-dynamic": "2.0.0",
+    "@angular/http": "2.0.0",
+    "@angular/router": "3.0.0",
+    "@angular/forms": "2.0.0",
+    "bootstrap": "3.3.4",
+    "core-js": "2.4.1",
+    "font-awesome": "4.6.3",
+    "platform": "1.3.1",
+    "reflect-metadata": "0.1.8",
+    "rxjs": "5.0.0-beta.12",
+    "systemjs": "0.19.37",
+    "zone.js": "0.6.23"
+  },
+  "devDependencies": {
+    "clean-css": "3.4.18",
+    "codelyzer": "0.0.24",
+    "connect-history-api-fallback": "1.2.0",
+    "jasmine-core": "2.4.1",
+    "lite-server": "2.2.2",
+    "nodemon": "1.9.2",
+    "npm-run-all": "2.3.0",
+    "systemjs-builder": "0.15.30",
+    "tslint": "3.12.1",
+    "typescript": "1.8.10",
+    "typings": "1.3.2"
+  }
+}

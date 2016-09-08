@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ping Identity Data Governance Broker Account Manager Sample</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="dist/img/favicon.ico" rel="shortcut icon">
+</head>
+<body style="background-color: #dbdbdb;">
+  <script>
+    var l = location;
+    var url = l.origin +
+        l.pathname.substring(0, l.pathname.lastIndexOf('/') + 1) +
+        '?csearch=' + encode(l.search) +
+        '&chash=' + encode(l.hash);
+    l.replace(url);
+    function encode(input) {
+      input = (input || '').replace(/\+/g, '%20');
+      return encodeURIComponent(btoa(input));
+    }
+  </script>
+</body>
+</html>
