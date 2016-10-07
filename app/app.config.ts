@@ -21,13 +21,15 @@ export const CLIENT_ID = '@account-manager@';
 export const URN_PREFIX = 'urn:pingidentity:';
 export const SCOPE_PREFIX = URN_PREFIX + 'scope:admin:';
 
-export enum Functionality { Register, Account, Password, ExternalIdentities, Sessions, Consents, SecondFactor }
+export enum Functionality { Register, Account, Entitlements, Password, ExternalIdentities, Sessions, Consents,
+    SecondFactor }
 
 export const REQUIRED_SCOPES = [ SCOPE_PREFIX + 'profiles' ];
 
 export const OPTIONAL_SCOPES_BY_FUNCTIONALITY = {};
 OPTIONAL_SCOPES_BY_FUNCTIONALITY[Functionality.Register] = [ SCOPE_PREFIX + 'register_account' ];
 OPTIONAL_SCOPES_BY_FUNCTIONALITY[Functionality.Account] = [ SCOPE_PREFIX + 'account_state' ];
+OPTIONAL_SCOPES_BY_FUNCTIONALITY[Functionality.Entitlements] = [ SCOPE_PREFIX + 'entitlements' ];
 OPTIONAL_SCOPES_BY_FUNCTIONALITY[Functionality.Password] = [
     SCOPE_PREFIX + 'password_quality_requirements',
     SCOPE_PREFIX + 'change_password'
@@ -43,7 +45,7 @@ OPTIONAL_SCOPES_BY_FUNCTIONALITY[Functionality.SecondFactor] = [
 
 export const ACR_VALUES = ''; // if no values are specified the defaults will be used
 
-export const MESSAGING_PROVIDERS: any = {
+export const MESSAGING_PROVIDERS = {
   SMS: 'Twilio SMS Provider',
   VOICE: 'Twilio Voice Provider'
 };

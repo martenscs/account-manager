@@ -24,7 +24,7 @@ export const template = `
                   <input [(ngModel)]="filter"
                          name="filter"
                          type="text" class="form-control"
-                         placeholder="Search by username, full name, email or phone">
+                         placeholder="Search by name, username, email or phone">
                   <span class="input-group-btn">
                     <button type="submit" class="btn btn-primary">
                       <span class="glyphicon glyphicon-search"></span>
@@ -39,14 +39,14 @@ export const template = `
         <table *ngIf="users && users.length > 0"
                class="table table-condensed mtxl">
           <tr>
-            <th scope="col">Full Name</th>
-            <th scope="col">UserID</th>
-            <th scope="col">Email Address</th>
-            <th scope="col">Phone Number</th>
+            <th scope="col">Name</th>
+            <th scope="col">Username</th>
+            <th scope="col">Email</th>
+            <th scope="col">Phone</th>
           </tr>
           <tr *ngFor="let user of users">
             <td><a (click)="select(user)" href="javascript:void(0)">{{ user.fullName }}</a></td>
-            <td>{{ user.record.userName }}</td>
+            <td>{{ user.userName }}</td>
             <td>{{ user.email }}</td>
             <td>{{ user.phone }}</td>
           </tr>

@@ -6,7 +6,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Utility, ScimService, Profile } from '../shared/index'
+import { Utility, ScimService, Profile, Functionality } from '../shared/index'
 import { template } from './profile-edit.html';
 
 @Component({
@@ -21,6 +21,8 @@ export class RegisterComponent implements OnInit {
   allowUsernameEdit = true;
 
   active = false;
+
+  functionalityEnum = Functionality;
 
   constructor(private router: Router, private scimService: ScimService) {}
 
@@ -44,5 +46,15 @@ export class RegisterComponent implements OnInit {
 
   cancel() {
     this.router.navigate(['/']);
+  }
+
+  addEntitlement() {
+    this.profile.record = this.profile.record || {};
+    this.profile.record.entitlements = this.profile.record.entitlements || [];
+    this.profile.record.entitlements.push({ value: '' });
+  }
+
+  removeEntitlement(index: number) {
+    this.profile.record.entitlements.splice(index, 1);
   }
 }

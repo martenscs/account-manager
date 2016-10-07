@@ -7,7 +7,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 
-import { Utility, ScimService, Profile } from '../shared/index'
+import { Utility, ScimService, Profile, Functionality } from '../shared/index'
 import { template } from './profile-edit.html';
 
 @Component({
@@ -22,6 +22,8 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
 
   active = false;
 
+  functionalityEnum = Functionality;
+
   constructor(private router: Router, private scimService: ScimService) {}
 
   ngOnInit() {
@@ -29,7 +31,10 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
         .subscribe((profile: Profile) => {
           // create a copy of the profile for editing
           this.profile = Utility.clone(profile);
-          
+          if (this.profile && this.profile.record && this.profile.record.entitlements) {
+            this.profile.record.entitlements.sort((a: any, b:any) => a.value.localeCompare(b.value));
+          }
+
           Utility.toggleActive(this);
         });
   }
@@ -51,5 +56,14 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
 
   cancel() {
     this.router.navigate(['/profile']);
+  }
+
+  addEntitlement() {
+    this.profile.record.entitlements = this.profile.record.entitlements || [];
+    this.profile.record.entitlements.push({ value: '' });
+  }
+
+  removeEntitlement(index: number) {
+    this.profile.record.entitlements.splice(index, 1);
   }
 }

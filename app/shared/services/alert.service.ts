@@ -10,7 +10,7 @@ import { Observable } from 'rxjs/Observable';
 export enum AlertType { Info, Warning, Error }
 
 export class Alert {
-  constructor(public message: string, public type: AlertType = AlertType.Info) {}
+  constructor(public message: string, public type: AlertType = AlertType.Info, public sticky: boolean = false) {}
 
   getClass(): string {
     if (this.type === AlertType.Warning) {
@@ -34,10 +34,10 @@ export class AlertService {
     return this._alerts$;
   }
 
-  add(message: string, type: AlertType = AlertType.Error) {
+  add(message: string, type: AlertType = AlertType.Error, sticky: boolean = false) {
     // NOTE: clear the alerts first, only ever have 1 currently...
     var alerts: Alert[] = [];
-    alerts.push(new Alert(message, type));
+    alerts.push(new Alert(message, type, sticky));
     this.alerts.next(alerts);
   }
 
@@ -51,6 +51,7 @@ export class AlertService {
   }
 
   clear() {
-    this.alerts.next([]);
+    // clear any non-sticky alerts
+    this.alerts.next(this.alerts.getValue().filter(a => a.sticky));
   }
 }

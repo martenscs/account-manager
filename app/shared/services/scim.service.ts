@@ -4,7 +4,7 @@
  */
 
 import { Injectable, Inject } from '@angular/core';
-import { Response, URLSearchParams } from '@angular/http';
+import { Response, URLSearchParams, QueryEncoder } from '@angular/http';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
@@ -221,15 +221,19 @@ export class ScimService {
     }
   }
 
-  refreshProfile(): Observable<Profile> {
+  get isProfileSelected(): boolean {
+    return !! this.profile.getValue();
+  }
+
+  refreshProfile(clearCache = false): Observable<Profile> {
     var o = this.httpWrapper.get(this.getAccountUrl());
-    o.subscribe((data: any) => this.selectProfile(new Profile(data), false),
+    o.subscribe((data: any) => this.selectProfile(new Profile(data), clearCache),
         this.handleError);
     return o;
   }
 
   fetchAccountState(): Observable<any> {
-    if (! this.configuration.hasRequiredScopes(Functionality.Account)) {
+    if (! this.profile.getValue() || ! this.configuration.hasRequiredScopes(Functionality.Account)) {
       return Observable.empty();
     }
     var o = this.httpWrapper.get(this.getAccountUrl('account'));
@@ -358,7 +362,7 @@ export class ScimService {
 
   queryUsers(filter: string): Observable<any> {
     // remove any double-quotes in the filter (we don't escape as it is unlikely they intend to search for
-    //  quotes in these fields...)
+    //   quotes in these fields...)
     if (filter) {
       filter = filter.replace(/"/g, '');
     }
@@ -369,7 +373,7 @@ export class ScimService {
     //   - We currently use a contains match on name.* and an exact match on the other fields due to the potential
     //     server performance impact of using contains without substring indexes
     //   - We retrieve all results instead of paging them
-    //   - The server will throw an exception if the query matches more than 100 results (by default, configurable)
+    //   - The server will throw an exception if the query matches more than 500 results (by default, configurable)
     var indexedOperation = 'co';
     var nonIndexedOperation = 'eq';
     var query = 'userName ' + nonIndexedOperation + ' "' + filter + '" or ' +
@@ -379,7 +383,8 @@ export class ScimService {
         'emails.value ' + nonIndexedOperation + ' "' + filter + '" or ' +
         'phoneNumbers.value ' + nonIndexedOperation + ' "' + filter + '"';
 
-    var params = new URLSearchParams();
+    // NOTE: use CustomQueryEncoder so that we escape any plus signs in the filter
+    var params = new URLSearchParams('', new CustomQueryEncoder());
     params.set('filter', query);
 
     var o = this.httpWrapper.get(this.getUrl('Users'), { search: params });
@@ -411,7 +416,7 @@ export class ScimService {
           this.selectProfile(new Profile(data));
           // reset the account's password so we have a known value
           if (this.configuration.hasRequiredScopes(Functionality.Password)) {
-            this.changePassword();
+            this.resetPassword();
           }
         },
         this.handleError
@@ -419,7 +424,7 @@ export class ScimService {
     return o;
   }
 
-  changePassword(newPassword?: string, currentPassword?: string): Observable<any> {
+  resetPassword(newPassword?: string, currentPassword?: string): Observable<any> {
     var data: any = {
       schemas: [ URN_PREFIX + 'scim:api:messages:2.0:PasswordUpdateRequest' ]
     };
@@ -433,7 +438,7 @@ export class ScimService {
     o.subscribe((data: any) => {
           if (data.generatedPassword) {
             this.alertService.add('This user\'s password was set to "' + data.generatedPassword + '".',
-                AlertType.Info);
+                AlertType.Info, true); // sticky alert
           }
         },
         (err: any) => {
@@ -581,5 +586,15 @@ export class ScimService {
     }
 
     return obj;
+  }
+}
+
+// custom encoder that escapes '+' signs in values unlike the OOB QueryEncoder
+class CustomQueryEncoder extends QueryEncoder {
+  encodeKey(k: string): string {
+    return super.encodeKey(k);
+  }
+  encodeValue(v: string): string {
+    return super.encodeValue(v).replace(/\+/g, '%2B');
   }
 }

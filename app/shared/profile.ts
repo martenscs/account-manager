@@ -37,6 +37,7 @@ TOPICS[X_VALUE_URN_PREFIX + 'topic:clothing:impress'] = 'I dress to impress';
 // This class encapsulates a profile record (contains schema-specific dependencies).
 export class Profile {
   record: any;
+  userName: string;
   fullName: string;
   email: string;
   phone: string;
@@ -49,6 +50,7 @@ export class Profile {
     this.record = record;
 
     // populate schema-specific convenience fields for binding
+    this.userName = record.userName;
     this.fullName = Profile.buildFullName(record);
     this.email = (Profile.findValueOfType(record, 'emails', 'home') || {}).value;
     this.phone = (Profile.findValueOfType(record, 'phoneNumbers', 'mobile') || {}).value;
@@ -115,6 +117,13 @@ export class Profile {
       Profile.storeTopicPreferences(record, profile.topicPreferences);
     }
 
+    // filter out any empty entitlements
+    if (record.entitlements) {
+      record.entitlements = record.entitlements
+          .map((v: any) => ({ value: v.value.trim() }))
+          .filter((v: any) => !! v.value);
+    }
+
     return record;
   }
 
@@ -128,6 +137,12 @@ export class Profile {
     if (profile && profile.record && profile.record.name) {
       profile.record.name.formatted = Profile.buildFullName(profile.record);
     }
+  }
+
+  static getEntitlementValues(profile: Profile) {
+    return profile && profile.record && profile.record.entitlements ?
+        profile.record.entitlements.map((j: any) => j.value).sort((a: string, b: string) => a.localeCompare(b)) :
+        undefined;
   }
 
   private static buildFullName(record: any): string {

@@ -15,6 +15,21 @@ export const template = `
            name="userName"
            type="text" class="form-control input-sm" placeholder="Username Used for Sign in" required>
   </div>
+  <div *ubidIfFunctionality="functionalityEnum.Entitlements"
+       class="form-group">
+    <label class="control-label">Entitlements </label>
+    <div *ngFor="let entitlement of profile.record.entitlements; let i = index;"
+         class="form-inline form-group">
+      <input [(ngModel)]="profile.record.entitlements[i].value"
+             [name]="'entitlements' + i"
+             type="text" class="form-control input-sm" style="width:240px" placeholder="Enter value">
+      <a (click)="removeEntitlement(i)"
+         href="javascript:void(0)" class="mls">Remove</a>
+    </div>
+    <a (click)="addEntitlement()"
+       href="javascript:void(0)"
+       style="display: block">Add</a>
+  </div>
   <div class="form-group">
     <label class="control-label required">Name </label>
     <div class="form-inline form-group">

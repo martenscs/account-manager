@@ -6,8 +6,8 @@ export const template = `
           <input [(ngModel)]="searchFilter"
                  name="searchFilter"
                  type="text" class="form-control"
-                 placeholder="Search by username, full name, email or phone"
-                 title="Search by username, full name, email or phone">
+                 placeholder="Search by name, username, email or phone"
+                 title="Search by name, username, email or phone">
           <span class="input-group-btn">
             <button type="submit" class="btn btn-primary">
               <span class="glyphicon glyphicon-search"></span>
@@ -23,11 +23,40 @@ export const template = `
         <strong>{{ profile.fullName }}</strong></div>
     </div>
     
-    <div *ubidIfFunctionality="functionalityEnum.Register"
+    <div *ngIf="profile || configuration.hasRequiredScopes(functionalityEnum.Register)"
          class="col-xs-2 text-right actions">
-      <a [routerLink]="['/register']">Register New Account</a>
+      
+      <div [ngClass]="{ 'open' : showActions }"
+           class="btn-group open">
+        <a (click)="showActions = ! showActions"
+           class="dropdown-toggle"
+           href="javascript:void(0)">
+          <span class="glyphicon glyphicon-cog"></span>
+          <span>Actions</span>
+          <b class="caret"></b>
+        </a>
+        <ul (click)="showActions = false"
+            class="dropdown-menu dropdown-menu-right">
+          <li *ubidIfFunctionality="functionalityEnum.Register">
+            <a [routerLink]="['/register']">Register New Account</a>
+          </li>
+          <li *ngIf="profile && accountState && configuration.hasRequiredScopes(functionalityEnum.Account)">
+            <a (click)="toggleDisabled()"
+               href="javascript:void(0)">
+               <span *ngIf="accountState.accountDisabled">Enable</span>
+               <span *ngIf="! accountState.accountDisabled">Disable</span>
+               Account</a>
+          </li>
+          <li *ngIf="profile && configuration.hasRequiredScopes(functionalityEnum.Password)">
+            <a [routerLink]="['/profile/reset-password']">Reset Password</a>
+          </li>
+          <li *ngIf="profile">
+                <a (click)="refresh()"
+                   href="javascript:void(0)">Refresh Account</a>
+          </li>
+        </ul>
+      </div>
     </div>
-
   </div>
 
   <ul *ngIf="profile"
@@ -63,4 +92,11 @@ export const template = `
       [show]="showSearch"
       (closed)="searchClosed($event)">
   </ubid-search>
+  
+  <ubid-confirm
+    [action]="'Disable Account'"
+    [prompt]="'If you continue, this user will no longer be able to sign in with this account.'"
+    [show]="showConfirmDisable"
+    (closed)="disableConfirmClosed($event)">
+  </ubid-confirm>
 `;

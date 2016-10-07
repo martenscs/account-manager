@@ -68,6 +68,18 @@ dsconfig create-oauth2-scope \
     --set tag:csr
 
 dsconfig create-oauth2-scope \
+    --scope-name urn:pingidentity:scope:admin:entitlements \
+    --type resource \
+    --set "description:Search, view, create, and update a user's entitlements." \
+    --set "consent-prompt-text:Search, view, create, and update a user's entitlements." \
+    --set scim-resource-type:Users \
+    --set resource-attribute:entitlements \
+    --set resource-operation:create \
+    --set resource-operation:modify \
+    --set resource-operation:retrieve \
+    --set resource-operation:search
+
+dsconfig create-oauth2-scope \
     --scope-name urn:pingidentity:scope:admin:account_state \
     --type resource \
     --set "description:Manage account state." \
@@ -187,6 +199,11 @@ dsconfig create-permitted-scope \
 dsconfig create-permitted-scope \
     --client-name "Account Manager" \
     --scope-name urn:pingidentity:scope:admin:register_account \
+    --set consent-required:false
+
+dsconfig create-permitted-scope \
+    --client-name "Account Manager" \
+    --scope-name urn:pingidentity:scope:admin:entitlements \
     --set consent-required:false
 
 dsconfig create-permitted-scope \

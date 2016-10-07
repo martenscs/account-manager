@@ -41,7 +41,10 @@ export class SearchComponent {
             (data: any) => {
               var users: Profile[] = [];
               if (data.Resources) {
+                // create profiles
                 data.Resources.forEach((resource: any) => users.push(new Profile(resource)));
+                // sort by name
+                users.sort((a: Profile, b: Profile) => a.fullName.localeCompare(b.fullName));
               }
               this.users = users;
             },
@@ -51,9 +54,11 @@ export class SearchComponent {
 
   select(user: Profile) {
     this.closed.emit(user);
+    this.users = [];
   }
 
   cancel() {
     this.closed.emit(undefined);
+    this.users = [];
   }
 }

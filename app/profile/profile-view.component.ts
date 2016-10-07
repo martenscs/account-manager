@@ -6,7 +6,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 
-import { ScimService, Profile, Functionality } from '../shared/index';
+import { Configuration, ScimService, Profile, Functionality } from '../shared/index';
 import { template } from './profile-view.html';
 
 @Component({
@@ -23,17 +23,18 @@ export class ProfileViewComponent implements OnInit, OnDestroy  {
 
   profile: Profile;
   accountState: any;
+  entitlements: string[];
 
-  showConfirmReset = false;
-  showConfirmDisable = false;
-
-  functionalityEnum = Functionality;
-
-  constructor(private scimService: ScimService) {}
+  constructor(private configuration: Configuration, private scimService: ScimService) {}
 
   ngOnInit() {
     this.profileSubscription = this.scimService.profile$
-        .subscribe((profile: Profile) => this.profile = profile);
+        .subscribe((profile: Profile) => {
+          this.profile = profile;
+          if (this.configuration.hasRequiredScopes(Functionality.Entitlements)) {
+            this.entitlements = Profile.getEntitlementValues(profile);
+          }
+        });
 
     this.accountStateSubscription = this.scimService.accountState$
         .subscribe((accountState: any) => this.accountState = accountState);
@@ -46,33 +47,5 @@ export class ProfileViewComponent implements OnInit, OnDestroy  {
     if (this.accountStateSubscription) {
       this.accountStateSubscription.unsubscribe();
     }
-  }
-
-  reset() {
-    this.showConfirmReset = true;
-  }
-
-  resetConfirmClosed(confirm: boolean) {
-    if (confirm) {
-      // no arguments == reset
-      this.scimService.changePassword();
-    }
-    this.showConfirmReset = false;
-  }
-
-  toggleDisabled() {
-    if (this.accountState.accountDisabled) {
-      this.scimService.toggleAccountDisabled(false);
-    }
-    else {
-      this.showConfirmDisable = true;
-    }
-  }
-
-  disableConfirmClosed(confirm: boolean) {
-    if (confirm) {
-      this.scimService.toggleAccountDisabled(true);
-    }
-    this.showConfirmDisable = false;
   }
 }

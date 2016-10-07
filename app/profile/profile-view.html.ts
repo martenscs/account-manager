@@ -17,6 +17,13 @@ export const template = `
           <p class="form-control-static">{{ profile.record.userName }}</p>
         </div>
       </div>
+      <div *ngIf="entitlements && entitlements.length > 0"
+           class="form-group">
+        <label class="col-sm-2 control-label">Entitlements</label>
+        <div class="col-sm-10">
+          <p class="form-control-static">{{ entitlements.join(', ') }}</p>
+        </div>
+      </div>
       <div *ngIf="profile.email"
            class="form-group">
         <label class="col-sm-2 control-label">Email</label>
@@ -52,40 +59,9 @@ export const template = `
 <div *ngIf="profile"
      class="mtm">
   <div class="pull-right">
-    <a [routerLink]="['/profile/edit']">Edit</a>
-    <span *ubidIfFunctionality="functionalityEnum.Account"
-          class="separator">|</span>
-    <a *ubidIfFunctionality="functionalityEnum.Account"
-       (click)="toggleDisabled()"
-       href="javascript:void(0)"><!--
-       --><span *ngIf="accountState && accountState.accountDisabled">Enable</span><!--
-       --><span *ngIf="accountState && (! accountState.accountDisabled)">Disable</span><!--
-     --></a>
-    <span *ubidIfFunctionality="functionalityEnum.Password"
-          class="separator">|</span>
-    <a *ubidIfFunctionality="functionalityEnum.Password"
-       [routerLink]="['/profile/change-password']">Change Password</a>
-    <span *ubidIfFunctionality="functionalityEnum.Password"
-          class="separator">|</span>
-    <a *ubidIfFunctionality="functionalityEnum.Password"
-       (click)="reset()"
-       href="javascript:void(0)">Reset Password</a>
+    <a [routerLink]="['/profile/edit']">Edit Profile</a>
     <span class="separator">|</span>
-    <a [routerLink]="['/profile/raw']">Raw Data</a>
+    <a [routerLink]="['/profile/raw']">View Raw Data</a>
   </div>
 </div>
-
-<ubid-confirm
-  [action]="'Reset Password'"
-  [prompt]="'If you continue, this user will no longer be able to sign in with their current password.'"
-  [show]="showConfirmReset"
-  (closed)="resetConfirmClosed($event)">
-</ubid-confirm>
-
-<ubid-confirm
-  [action]="'Disable Account'"
-  [prompt]="'If you continue, this user will no longer be able to sign in with this account.'"
-  [show]="showConfirmDisable"
-  (closed)="disableConfirmClosed($event)">
-</ubid-confirm>
 `;
