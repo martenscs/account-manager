@@ -30,7 +30,9 @@ export class TopicEditComponent implements OnInit, OnDestroy  {
         .subscribe((profile: Profile) => {
           this.profile = Utility.clone(profile);
           // for convenience when binding, set a reference to the options
-          this.topicPreferences = this.profile.topicPreferences;
+          if (this.profile) {
+            this.topicPreferences = this.profile.topicPreferences;
+          }
 
           Utility.toggleActive(this);
         });

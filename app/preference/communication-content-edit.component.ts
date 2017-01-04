@@ -30,7 +30,9 @@ export class CommunicationContentEditComponent implements OnInit, OnDestroy  {
         .subscribe((profile: Profile) => {
           this.profile = Utility.clone(profile);
           // for convenience when binding, set a reference to the options
-          this.options = this.profile.communicationContentOptions;
+          if (this.profile) {
+            this.options = this.profile.communicationContentOptions;
+          }
           
           Utility.toggleActive(this);
         });
