@@ -3,8 +3,8 @@
  * All Rights Reserved.
  */
 
-import { Injectable } from '@angular/core';
-import { Http, Headers, Response, RequestOptionsArgs } from '@angular/http';
+import { Injectable, Inject } from '@angular/core';
+import { Http, Headers, Response, RequestOptionsArgs, URLSearchParams } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/finally';
 import 'rxjs/add/operator/map';
@@ -21,10 +21,16 @@ export const HTTP_LOADING_KEY = 'http';
 @Injectable()
 export class HttpWrapper {
 
+  private window: Window;
+
   bearerToken: string;
   private headers: Headers;
 
-  constructor(private http: Http, private configuration: Configuration, private loadingService: LoadingService) {
+  constructor(@Inject(Window) window: Window, private http: Http, private configuration: Configuration,
+              private loadingService: LoadingService) {
+
+    this.window = window;
+
     this.headers = new Headers();
     this.headers.append('Content-Type', 'application/json');
     this.headers.append('Accept', 'application/json, application/scim+json');
@@ -106,7 +112,7 @@ export class HttpWrapper {
   }
 
   public getAuthorizeUrl(state: number): string {
-    var url = this.buildUrl(IDENTITY_PROVIDER_URL, 'oauth/authorize') + '?' +
+    var url = this.buildUrl(IDENTITY_PROVIDER_URL, this.configuration.idpConfig.AUTH_ENDPOINT) + '?' +
         'response_type=' + encodeURIComponent('token') + '&' +
         'client_id=' + encodeURIComponent(CLIENT_ID) + '&' +
         'redirect_uri=' + encodeURIComponent(CLIENT_REDIRECT_URL) + '&' +
@@ -119,8 +125,27 @@ export class HttpWrapper {
   }
 
   public getLogoutUrl(): string {
-    return this.buildUrl(IDENTITY_PROVIDER_URL, 'oauth/logout') + '?' +
-        'post_logout_redirect_uri=' + encodeURIComponent(CLIENT_REDIRECT_URL);
+    var url = this.buildUrl(IDENTITY_PROVIDER_URL, this.configuration.idpConfig.LOGOUT_ENDPOINT);
+    if (this.configuration.isBrokerIdp) {
+      url += '?post_logout_redirect_uri=' + encodeURIComponent(CLIENT_REDIRECT_URL);
+    }
+    else if (this.configuration.isPingFederateIdp) {
+      url += '?TargetResource=' + encodeURIComponent(CLIENT_REDIRECT_URL);
+    }
+    return url;
+  }
+
+  public revokeAndLogout() {
+    // NOTE: this function is currently only used when PingFederate is the IDP, so assumes the PF revoke endpoint's
+    // parameters
+    var data = new URLSearchParams();
+    data.append('token', this.bearerToken);
+    data.append('client_id', CLIENT_ID);
+
+    // we ignore success or error and always navigate to the logout URL after attempting the revoke
+    this.http.post(this.buildUrl(IDENTITY_PROVIDER_URL, this.configuration.idpConfig.REVOKE_ENDPOINT), data)
+        .finally(() => this.window.location.assign(this.getLogoutUrl()))
+        .subscribe(() => {}, () => {});
   }
 
   private buildUrl(base: string, path: string): string {

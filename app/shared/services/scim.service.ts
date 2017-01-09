@@ -87,7 +87,7 @@ export class ScimService {
   init() {
     // process the initial search params when the app/service loads
     var params: Object = HttpWrapper.parseParams(this.window.location.search);
-    var scopes: string[], requiredScopes: string[], i: number;
+    var scopes: string[], grantedScopes: string[], parts: string[], jsonToken: any, state: number, uri: string;
     if (params['chash']) {
       // this is an OAuth callback
       params = HttpWrapper.parseParams(HttpWrapper.decodeCallbackArg(params['chash']));
@@ -98,8 +98,18 @@ export class ScimService {
               'sent with the request (' + this.window.sessionStorage.getItem(STORAGE_KEY.STATE) + ')');
         }
         else {
-          // validate the scopes
-          this.configuration.grantedScopes = params['scope'] ? params['scope'].split(' ') : [];
+          // validate the granted scopes (retrieved either by query parameter (Broker) or JWT (PingFederate))
+          grantedScopes = params['scope'] ? params['scope'].split(' ') : [];
+          if (grantedScopes.length === 0) {
+            parts = params['access_token'].split('.');
+            if (parts.length === 3) {
+              jsonToken = JSON.parse(atob(parts[1]));
+              if (jsonToken && jsonToken.scope) {
+                grantedScopes = jsonToken.scope;
+              }
+            }
+          }
+          this.configuration.grantedScopes = grantedScopes;
           if (! this.configuration.hasRequiredScopes()) {
             this.error = this.formatError('The application was not granted the required scopes.  Make sure you are ' +
                 'signing in with a privileged account.');
@@ -119,9 +129,9 @@ export class ScimService {
     }
     else {
       // redirect for access token
-      var state = Utility.getRandomInt(0, 999999);
+      state = Utility.getRandomInt(0, 999999);
       this.window.sessionStorage.setItem(STORAGE_KEY.STATE, state.toString());
-      var uri = this.httpWrapper.getAuthorizeUrl(state);
+      uri = this.httpWrapper.getAuthorizeUrl(state);
       this.window.location.assign(uri);
       return;
     }

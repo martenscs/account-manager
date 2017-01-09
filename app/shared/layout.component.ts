@@ -18,6 +18,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
   alerts: Alert[];
   logoutUrl: string;
+  isPingFederateIdp = false;
   showLoading = false;
 
   private alertSubscription: Subscription;
@@ -29,6 +30,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.logoutUrl = this.httpWrapper.getLogoutUrl();
+    this.isPingFederateIdp = this.configuration.isPingFederateIdp;
 
     this.alertSubscription = this.alertService.alerts$.subscribe(
         (alerts: Alert[]) => this.alerts = alerts);
@@ -49,5 +51,9 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
   closeAlert(alert: Alert) {
     this.alertService.close(alert);
+  }
+
+  revokeAndLogout() {
+    this.httpWrapper.revokeAndLogout();
   }
 }

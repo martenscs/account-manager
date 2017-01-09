@@ -1051,11 +1051,6 @@ input.ng-invalid.ng-dirty {
   left: 50%;
 }
 
-
-/****************************
-TODO: WORK IN PROGRESS
-*/
-
 .toolbar {
   background-color: #f5f5f5;
   border: 1px solid #dddddd;
@@ -1109,4 +1104,3 @@ TODO: WORK IN PROGRESS
   padding-top: 10px;
   padding-bottom: 3px;
 }
-

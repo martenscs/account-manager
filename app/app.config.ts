@@ -8,13 +8,36 @@ import { Http, Response } from '@angular/http';
 import 'rxjs/add/operator/map';
 
 
+enum IdentityProviderTypes { Broker, PingFederate }
+
+
 // NOTE: Override these for local development (examples below).
 export const IDENTITY_PROVIDER_URL = '/';
 export const CLIENT_REDIRECT_URL = '/samples/account-manager/callback.html';
 //export const IDENTITY_PROVIDER_URL = 'https://localhost:8445/';
 //export const CLIENT_REDIRECT_URL = 'http://localhost:3006/callback.html';
 
+// NOTE: Override this when the IDP and resource server are not a single Data Governance Broker instance.
 export const RESOURCE_SERVER_URL = IDENTITY_PROVIDER_URL;
+
+// NOTE: Override this when using PingFederate as the IDP (example below).
+const IDENTITY_PROVIDER_TYPE = IdentityProviderTypes.Broker;
+//const IDENTITY_PROVIDER_TYPE = IdentityProviderTypes.PingFederate;
+
+
+const IDENTITY_PROVIDER_CONFIG: any = {};
+// Broker IDP configuration (revoke is not required since logout endpoint handles it)
+IDENTITY_PROVIDER_CONFIG[IdentityProviderTypes.Broker] = {
+  AUTH_ENDPOINT: 'oauth/authorize',
+  LOGOUT_ENDPOINT: 'oauth/logout'
+};
+// PingFederate IDP configuration
+IDENTITY_PROVIDER_CONFIG[IdentityProviderTypes.PingFederate] = {
+  AUTH_ENDPOINT: 'as/authorization.oauth2',
+  REVOKE_ENDPOINT: 'as/revoke_token.oauth2',
+  LOGOUT_ENDPOINT: 'idp/startSLO.ping'
+};
+
 
 export const CLIENT_ID = '@account-manager@';
 
@@ -42,6 +65,9 @@ OPTIONAL_SCOPES_BY_FUNCTIONALITY[Functionality.SecondFactor] = [
     SCOPE_PREFIX + 'validated_phone_number',
     SCOPE_PREFIX + 'totp'
   ];
+
+const BROKER_IDP_ONLY_FUNCTIONALITY = [ Functionality.ExternalIdentities, Functionality.Sessions,
+  Functionality.Consents, Functionality.SecondFactor ];
 
 export const ACR_VALUES = ''; // if no values are specified the defaults will be used
 
@@ -84,10 +110,16 @@ export class Configuration {
   }
 
   hasRequiredScopes(f?: Functionality): boolean {
-    var i: number;
+    var brokerOnly: boolean, requiredScopes: string[], i: number;
+
+    // always false if Broker only and not Broker IDP
+    brokerOnly = BROKER_IDP_ONLY_FUNCTIONALITY.indexOf(f) !== -1;
+    if (brokerOnly && ! this.isBrokerIdp) {
+      return false;
+    }
 
     // check either the required scopes or the given functionality's scopes
-    var requiredScopes = f !== undefined ? OPTIONAL_SCOPES_BY_FUNCTIONALITY[f] : REQUIRED_SCOPES;
+    requiredScopes = f !== undefined ? OPTIONAL_SCOPES_BY_FUNCTIONALITY[f] : REQUIRED_SCOPES;
 
     // verify we have all the scopes...
     for (i = 0; i < requiredScopes.length; i++) {
@@ -97,6 +129,18 @@ export class Configuration {
     }
 
     return true;
+  }
+
+  get isBrokerIdp(): boolean {
+    return IDENTITY_PROVIDER_TYPE === IdentityProviderTypes.Broker;
+  }
+
+  get isPingFederateIdp(): boolean {
+    return IDENTITY_PROVIDER_TYPE === IdentityProviderTypes.PingFederate;
+  }
+
+  get idpConfig(): any {
+    return IDENTITY_PROVIDER_CONFIG[IDENTITY_PROVIDER_TYPE];
   }
 
   constructor(@Inject(Window) window: Window, private http: Http) {

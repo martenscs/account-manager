@@ -53,6 +53,62 @@ Data Governance Broker sample UI for delegated account management
 9. Access the sample at your servlet container's address and the appropriate context.
 
 
+### Deployment with PingFederate as the Identity Provider
+
+The application's default configuration assumes a single Data Governance Broker server is performing both the Identity
+Provider (IDP) and Resource Server roles.  However, the application can also be configured to use a PingFederate server
+as the IDP.
+
+The steps below assume that both the Data Governance Broker and PingFederate server have been configured so that the
+Broker's SCIM endpoint can accept and validate the PingFederate server's access tokens.  Refer to the Data Governance
+Broker documentation for the required configuration to enable this feature.
+
+1. Extract the account-manager.tar.gz file (found in the samples directory).
+2. Extract the source from the account-manager-source.tar.gz file in a development environment.
+3. Customize the configuration values and optionally the other application source files and build account-manager.war.
+   At a minimum, values to be customized will include `IDENTITY_PROVIDER_URL`, `RESOURCE_SERVER_URL`, and
+   `IDENTITY_PROVIDER_TYPE` (see the "Customization" section for additional details).
+4. If you are deploying the custom account-manager.war file in the Data Governance Broker, perform the following:
+   * Use dsconfig to run the commands in the setup.dsconfig file that add the Web Application Extension and add it to
+     the HTTPS Connection Handler.
+   * Restart the HTTP Connection Handler by disabling and re-enabling it, or by restarting the server.
+5. If you are deploying the custom account-manager.war file in an external servlet container, perform the following:
+   * Deploy the custom account-manager.war file into your servlet container as appropriate (e.g. copy it into the
+     webapps directory of your Tomcat installation and restart).
+   * Use dsconfig or the console application to edit the HTTP Servlet Cross Origin Policy configuration to allow for
+     cross-domain AJAX requests to the Data Governance Broker's SCIM2 HTTP Servlet Extension. The sample application's
+     origin and the Data Governance Broker's origin should be added to "cors-allowed-origins", and "GET", "DELETE",
+     "POST" and "PUT" should be added to "cors-allowed-methods". E.g.,
+   
+     dsconfig create-http-servlet-cross-origin-policy --policy-name account-manager \
+         --set cors-allowed-origins:http://localhost:3006 --set cors-allowed-origins:https://localhost:8445 \
+         --set cors-allowed-methods:GET --set cors-allowed-methods:DELETE --set cors-allowed-methods:POST \
+         --set cors-allowed-methods:PUT
+
+     dsconfig set-http-servlet-extension-prop --extension-name SCIM2 --set cross-origin-policy:account-manager
+
+6. Use dsconfig to run the commands in the setup.dsconfig file that add the required Scope objects to the Data
+   Governance Broker's configuration.
+7. Configure the following in PingFederate:
+   * Under Scope Management, configure scopes with names that match those that were added to the Data Governance Broker
+     in step 6 (also listed in the "Scopes" section below).  NOTE: These scopes are configured to be highly privileged
+     in the Broker so it is recommended that the "Restrict Scopes" option be used for all OAuth Clients and only this
+     application's OAuth Client be given access to these scopes.
+   * Configure an OAuth Client for this application.  The Client ID should match the `CLIENT_ID` value in the
+     application configuration.  Client Authentication should be set to "None".  The Redirect URI should be the address
+     the sample application will be accessible at, and should match the `CLIENT_REDIRECT_URL` value in the application
+     configuration.  Allowed Grant Type should be "Implicit".
+   * To allow Sign Out from the application, configure Asynchronous Front-Channel Logout settings in the
+     OAuth Settings > Authorization Server Settings screen. Select the Track User Sessions for Logout and Revoke User
+     Session on Logout check boxes.  Add the application's domain and path to the allowed redirect list in the Server
+     Configuration > Redirect Validation screen.
+   * This application allows access to user accounts that should be restricted.  One option for doing so would be to
+     configure the OAuth Client to use an Access Token Manager with an Issuance Criteria that ensures only privileged
+     accounts can get an access token via the OAuth Settings > Access Token Management and OAuth Settings > Access Token
+     Mapping screens (e.g. require the account to have the "admin" entitlement). 
+8. Access the sample at the appropriate address and context.
+
+
 ### Additional Configuration for Password Reset
 
 Additional configuration is required in order for users to be prompted to change their password after this sample is
@@ -66,6 +122,10 @@ The settings both default to "false", and should be changed to "true" to enable 
 
 ### Entitlements
 
+NOTE: This section is only applicable when the Identity Provider (IDP) is a Data Governance Broker. An alternate
+      mechanism must be used to restrict access to the privileged scopes when using a PingFederate IDP (see the
+      "Deployment with PingFederate as the Identity Provider" section for more details).
+      
 This application depends on resource scopes for data access (resource scopes allow access to other users' data).
 
 The out-of-box OAuth2 Scope Policy allows users with the "admin" entitlement to have access to resource scopes.
@@ -84,6 +144,11 @@ entitled user) or LDAP.
 
 
 ### Scopes
+
+NOTE: The discussion of entitlements policy governing scope access in this section is only applicable when the Identity
+      Provider (IDP) is a Data Governance Broker. An alternate mechanism must be used to restrict access to the
+      privileged scopes when using a PingFederate IDP (see the "Deployment with PingFederate as the Identity Provider"
+      section for more details).
 
 The sample's default configuration depends on scopes that are created by the setup.dsconfig file:
 
@@ -191,30 +256,32 @@ Several configuration values are defined in the app/app.config.ts file for easy 
 can be found near the top of the script (search for the "export" statements). Values include:
 
 1. `IDENTITY_PROVIDER_URL`
-   The URI of the Data Governance Broker's OAuth connection handler.  A value like "https://1.2.3.4:8443" should be
-   used.
+   The URI of the IDP's OAuth connection handler.  A value like "https://1.2.3.4:8443" should be used.
 2. `RESOURCE_SERVER_URL`
    The URI of the Data Governance Broker's SCIM connection handler.  A value like "https://1.2.3.4:8443" should be used.
 3. `CLIENT_REDIRECT_URL`
    The redirect URI for the client in the OAuth flow.  This should be the address used to view the sample, and
    should be one of the Redirect URLs configured for the sample OAuth2 Client in the Data Governance Broker.  A value
    like "https://1.2.3.4:8443/samples/account-manager/" should be used.
-4. `CLIENT_ID`
+4. `IDENTITY_PROVIDER_TYPE`
+   The type of IDP referenced by `IDENTITY_PROVIDER_URL`.  Should be set to `IdentityProviderTypes.Broker` or
+   `IdentityProviderTypes.PingFederate`.
+5. `CLIENT_ID`
    The Client ID assigned to the Account Manager OAuth2 Client in the Data Governance Broker configuration.  This is set
    to a known value by the setup configuration script and should not typically need to be changed.
-5. `URN_PREFIX`
+6. `URN_PREFIX`
    A prefix used by various URNs in the Data Governance Broker configuration.
-6. `SCOPE_PREFIX`
+7. `SCOPE_PREFIX`
    A prefix used for this sample's scope URNs in the Data Governance Broker configuration.
-7. `REQUIRED_SCOPES`
+8. `REQUIRED_SCOPES`
    A list of scopes that are required for access to this sample.
-8. `OPTIONAL_SCOPES_BY_FUNCTIONALITY`
+9. `OPTIONAL_SCOPES_BY_FUNCTIONALITY`
    A list of scopes grouped by areas of functionality that are required for access to that functionality in this sample.
-9. `ACR_VALUES`
+10. `ACR_VALUES`
    The ACR values the client will explicitly request in order of preference.  If this value is left empty the client
-   will not specify ACR values which will cause the defaults configured for it in the Data Governance Broker to be used.
-   Otherwise, a space-separated value like "MFA Default" should be used.
-10. `MESSAGING_PROVIDERS`
+   will not specify ACR values (if the IDP is a Data Governance Broker it will use the defaults configured for the
+   client).  Otherwise, a space-separated value like "MFA Default" should be used.
+11. `MESSAGING_PROVIDERS`
    The providers used for second factor phone numbers.
 
 Changes such as using a schema other than the Data Governance Broker's reference app schema will require more extensive
