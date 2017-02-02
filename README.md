@@ -39,10 +39,12 @@ Data Governance Broker sample UI for delegated account management
    origin and the Data Governance Broker's origin should be added to "cors-allowed-origins", and "GET", "DELETE", "POST"
    and "PUT" should be added to "cors-allowed-methods". E.g.,
 
-   dsconfig create-http-servlet-cross-origin-policy --policy-name account-manager \
-       --set cors-allowed-origins:http://localhost:3006 --set cors-allowed-origins:https://localhost:8445 \
-       --set cors-allowed-methods:GET --set cors-allowed-methods:DELETE --set cors-allowed-methods:POST \
-       --set cors-allowed-methods:PUT
+```
+dsconfig create-http-servlet-cross-origin-policy --policy-name account-manager \
+   --set cors-allowed-origins:http://localhost:3006 --set cors-allowed-origins:https://localhost:8445 \
+   --set cors-allowed-methods:GET --set cors-allowed-methods:DELETE --set cors-allowed-methods:POST \
+   --set cors-allowed-methods:PUT
+```
 
    dsconfig set-http-servlet-extension-prop --extension-name SCIM2 --set cross-origin-policy:account-manager
 
@@ -79,13 +81,15 @@ Broker documentation for the required configuration to enable this feature.
      cross-domain AJAX requests to the Data Governance Broker's SCIM2 HTTP Servlet Extension. The sample application's
      origin and the Data Governance Broker's origin should be added to "cors-allowed-origins", and "GET", "DELETE",
      "POST" and "PUT" should be added to "cors-allowed-methods". E.g.,
-   
-     dsconfig create-http-servlet-cross-origin-policy --policy-name account-manager \
-         --set cors-allowed-origins:http://localhost:3006 --set cors-allowed-origins:https://localhost:8445 \
-         --set cors-allowed-methods:GET --set cors-allowed-methods:DELETE --set cors-allowed-methods:POST \
-         --set cors-allowed-methods:PUT
 
-     dsconfig set-http-servlet-extension-prop --extension-name SCIM2 --set cross-origin-policy:account-manager
+```   
+dsconfig create-http-servlet-cross-origin-policy --policy-name account-manager \
+ --set cors-allowed-origins:http://localhost:3006 --set cors-allowed-origins:https://localhost:8445 \
+ --set cors-allowed-methods:GET --set cors-allowed-methods:DELETE --set cors-allowed-methods:POST \
+ --set cors-allowed-methods:PUT
+
+dsconfig set-http-servlet-extension-prop --extension-name SCIM2 --set cross-origin-policy:account-manager
+```
 
 6. Use dsconfig to run the commands in the setup.dsconfig file that add the required Scope objects to the Data
    Governance Broker's configuration.
@@ -309,3 +313,12 @@ updating the configuration of the scopes' resource attributes.
 
    http://tools.ietf.org/html/rfc6749#section-1.3.2
    https://html.spec.whatwg.org/multipage/webstorage.html#the-sessionstorage-attribute
+
+### Support and reporting bugs
+
+This is unsupported sample code. Help will be provided on a best-effort basis through GitHub. Please report issues 
+using the project's [issue tracker](https://github.com/UnboundID/account-manager/issues).
+
+### License
+
+This is licensed under the Apache License 2.0.
