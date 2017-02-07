@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/UnboundID/account-manager.svg?branch=master)](https://travis-ci.org/UnboundID/account-manager)
+
 account-manager
 ===============
 
