@@ -2,7 +2,7 @@
   "private": true,
   "name": "account-manager",
   "description": "Data Governance Broker sample UI for delegated account management.",
-  "version": "1.0.0",
+  "version": "1.0.1-0",
   "license": "Apache-2.0",
   "homepage": "https://github.com/UnboundID/account-manager#readme",
   "repository": {
