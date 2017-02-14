@@ -104,6 +104,7 @@ dsconfig set-http-servlet-extension-prop --extension-name SCIM2 --set cross-orig
      application configuration.  Client Authentication should be set to "None".  The Redirect URI should be the address
      the sample application will be accessible at, and should match the `CLIENT_REDIRECT_URL` value in the application
      configuration.  Allowed Grant Type should be "Implicit".
+   * The OAuth Client must use an Access Token Manager of type 'JSON Web Tokens'
    * To allow Sign Out from the application, configure Asynchronous Front-Channel Logout settings in the
      OAuth Settings > Authorization Server Settings screen. Select the Track User Sessions for Logout and Revoke User
      Session on Logout check boxes.  Add the application's domain and path to the allowed redirect list in the Server
@@ -112,6 +113,12 @@ dsconfig set-http-servlet-extension-prop --extension-name SCIM2 --set cross-orig
      configure the OAuth Client to use an Access Token Manager with an Issuance Criteria that ensures only privileged
      accounts can get an access token via the OAuth Settings > Access Token Management and OAuth Settings > Access Token
      Mapping screens (e.g. require the account to have the "admin" entitlement). 
+
+     For example, if the Access Token Manager and mapping were configured to use an LDAP data source 'PingDirectory',
+     that included "ubidEntitlement" in the attribute contract, the following OGNL expression could be used as an
+     Issuance Criteria to limit access (requires Expressions to be enabled):
+
+     get("ds.PingDirectory.ubidEntitlement").getValues().toString().contains("admin")
 8. Access the sample at the appropriate address and context.
 
 
