@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/UnboundID/account-manager.svg?branch=master)](https://travis-ci.org/UnboundID/account-manager)
+[![Build Status](https://travis-ci.org/pingidentity/account-manager.svg?branch=master)](https://travis-ci.org/pingidentity/account-manager)
 
 account-manager
 ===============
@@ -326,7 +326,7 @@ updating the configuration of the scopes' resource attributes.
 ### Support and reporting bugs
 
 This is unsupported sample code. Help will be provided on a best-effort basis through GitHub. Please report issues 
-using the project's [issue tracker](https://github.com/UnboundID/account-manager/issues).
+using the project's [issue tracker](https://github.com/pingidentity/account-manager/issues).
 
 ### License
 

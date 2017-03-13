@@ -4,13 +4,13 @@
   "description": "Data Governance Broker sample UI for delegated account management.",
   "version": "1.0.1-0",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/UnboundID/account-manager#readme",
+  "homepage": "https://github.com/pingidentity/account-manager#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/UnboundID/account-manager.git"
+    "url": "https://github.com/pingidentity/account-manager.git"
   },
   "bugs": {
-    "url": "https://github.com/UnboundID/account-manager/issues"
+    "url": "https://github.com/pingidentity/account-manager/issues"
   },
   "scripts": {
     "clean": "rm -Rf dist && mkdir dist && mkdir dist/app && mkdir dist/css && mkdir dist/vendor",
