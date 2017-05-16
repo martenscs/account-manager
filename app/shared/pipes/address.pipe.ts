@@ -1,5 +1,5 @@
 /**
-* Copyright 2016-2017 UnboundID Corp.
+* Copyright 2016-2017 Ping Identity Corporation
 * All Rights Reserved.
 */
 

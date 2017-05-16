@@ -52,11 +52,12 @@ export const template = `
         </div>
         <div class="ab-app-name">Data Governance Broker Account Manager Sample UI</div>
         <div class="ab-app-version"> {{ configuration.version }}</div>
-        <div class="ab-contact-info"> UnboundID Corp.
-          <br> 13809 Research Blvd, Suite 500
-          <br> Austin, TX 78750
-          <br> +1 512 600 7700</div>
-        <div><a class="ab-email-info" href="javascript:void(0)">info@unboundid.com</a></div>
+        <div class="ab-contact-info"> Ping Identity Corporation
+          <br> 1001 17th Street
+          <br> Suite 100
+          <br> Denver, CO 80202
+          <br> +1 303 468 2900</div>
+        <div><a class="ab-email-info" href="https://www.pingidentity.com" target="_blank">https://www.pingidentity.com</a></div>
       </div>
     </div>
   </div>

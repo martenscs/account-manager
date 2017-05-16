@@ -1,6 +1,6 @@
 @charset "UTF-8";
 /*!
- * Copyright 2016-2017 UnboundID Corp.
+ * Copyright 2016-2017 Ping Identity Corporation
  * All Rights Reserved.
  */
 
@@ -43,7 +43,7 @@
   margin-top:10px;
   margin-bottom:10px;
 }
-.ab-email-info:link {
+.ab-email-info {
   color:#fff;
 }
 
@@ -72,7 +72,7 @@
 .pap-app-icon {
   display:table-cell;
   min-width: 48px;
-  min-height: 48px; 
+  min-height: 48px;
   padding-right: 10px;
 }
 .pap-app-text {
@@ -95,7 +95,7 @@
 }
 .accountlink-div .pap-app-icon {
   width: 40px;
-  height: 40px; 
+  height: 40px;
   padding-right: 10px;
 }
 .accountlink-div .pap-app-description {
@@ -279,7 +279,7 @@ table {
   margin-right: 0;
   background-color: #40474B;
   -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, .15);
-          box-shadow: 0 1px 3px rgba(0, 0, 0, .15);  
+          box-shadow: 0 1px 3px rgba(0, 0, 0, .15);
   border-radius: 5px;
 }
 .login-div .alert {
@@ -356,8 +356,8 @@ table {
   padding-bottom:3px;
 }
 .login-alt button img {
-  max-height:20px; 
-  max-width:20px; 
+  max-height:20px;
+  max-width:20px;
   margin-right:6px;
   margin-left: -3px;
 }
@@ -366,7 +366,7 @@ table {
     width:100%;
     margin:20px auto;
     overflow:hidden;
-    text-align:center;   
+    text-align:center;
     line-height:1.2em;
   font-size:16px;
 }
@@ -563,7 +563,7 @@ table {
   margin-left:6px;
 }
 .profile-info-icon {
-  color:#232c4b; 
+  color:#232c4b;
   cursor:pointer;
 }
 .login-container .profile-image img {
@@ -933,7 +933,7 @@ form label.required:after, form span.required:after {
   margin-top: 12px;
   margin-bottom: 12px;
   font-size: 17px;
-  display: inline-block;  
+  display: inline-block;
 }
 
 .section-header .btn-group {
