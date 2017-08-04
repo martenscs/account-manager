@@ -15,12 +15,8 @@ Data Governance Broker sample UI for delegated account management
    group, you can apply the script to the entire server group using the "--applyChangeTo server-group" argument. For
    Data Governance Brokers added later, untar the account-manager archive before cloning the configuration from an
    existing server.
-3. Optionally modify the OAuth2 Scope Policy using oauth2-scope-policy.xml to allow users with an entitlement matching a
-   tag on a resource scope to have access to that scope (setup.dsconfig contains a commented-out command for modifying
-   this policy).  The scopes installed by setup.dsconfig have "csr" and "csr-limited" tags.  Add entitlements matching
-   the tags to user accounts for use with this sample (see the Entitlements section below).
-4. Restart the HTTP Connection Handler by disabling and re-enabling it, or by restarting the server.
-5. Access the sample at the HTTP Connection Handler's address and the /samples/account-manager context.  For example:
+3. Restart the HTTP Connection Handler by disabling and re-enabling it, or by restarting the server.
+4. Access the sample at the HTTP Connection Handler's address and the /samples/account-manager context.  For example:
    "https://1.2.3.4:8443/samples/account-manager/".
 
 
@@ -50,11 +46,7 @@ dsconfig create-http-servlet-cross-origin-policy --policy-name account-manager \
 
    dsconfig set-http-servlet-extension-prop --extension-name SCIM2 --set cross-origin-policy:account-manager
 
-8. Optionally modify the OAuth2 Scope Policy using oauth2-scope-policy.xml to allow users with an entitlement matching a
-   tag on a resource scope to have access to that scope (setup.dsconfig contains a commented-out command for modifying
-   this policy).  The scopes installed by setup.dsconfig have "csr" and "csr-limited" tags.  Add entitlements matching
-   the tags to user accounts for use with this sample (see the Entitlements section below).
-9. Access the sample at your servlet container's address and the appropriate context.
+8. Access the sample at your servlet container's address and the appropriate context.
 
 
 ### Deployment with PingFederate as the Identity Provider
@@ -133,35 +125,8 @@ Policy in the Directory Server.
 The settings both default to "false", and should be changed to "true" to enable these flows.
 
 
-### Entitlements
-
-NOTE: This section is only applicable when the Identity Provider (IDP) is a Data Governance Broker. An alternate
-      mechanism must be used to restrict access to the privileged scopes when using a PingFederate IDP (see the
-      "Deployment with PingFederate as the Identity Provider" section for more details).
-      
-This application depends on resource scopes for data access (resource scopes allow access to other users' data).
-
-The out-of-box OAuth2 Scope Policy allows users with the "admin" entitlement to have access to resource scopes.
-
-As noted in the deployment sections above, oauth2-scope-policy.xml contains a customized version of this policy that
-also allows users with an entitlement matching a tag on a resource scope to have access to that scope.  The scopes added
-by setup.dsconfig have the "csr" and "csr-limited" tags (except urn:pingidentity:scope:admin:entitlements which has no
-tags and thus is only available to users with the "admin" entitlement).  The details for each scope in the Scopes
-section below note which tags it is assigned by setup.dsconfig.
-
-You will need to add the "admin" entitlement to a user in the Directory Server via LDAP to get started with this sample.
-See resource/starter-schemas/entitlements-ldap-modify.ldif in the Data Governance Broker installation directory for an
-example.  If you use the customized OAuth2 Scope Policy and want to create sample application users with varying degrees
-of access, you can then add the "csr" and "csr-limited" entitlements to users using the sample UI (as an "admin"
-entitled user) or LDAP.
-
-
 ### Scopes
 
-NOTE: The discussion of entitlements policy governing scope access in this section is only applicable when the Identity
-      Provider (IDP) is a Data Governance Broker. An alternate mechanism must be used to restrict access to the
-      privileged scopes when using a PingFederate IDP (see the "Deployment with PingFederate as the Identity Provider"
-      section for more details).
 
 The sample's default configuration depends on scopes that are created by the setup.dsconfig file:
 
@@ -169,57 +134,19 @@ The sample's default configuration depends on scopes that are created by the set
    Allows searching, reading and modifying user profile attributes.
    This scope is configured with resource attributes that are defined by the Data Governance Broker's reference app
    schema.
-   With the default configuration, the user must have the "admin", "csr", or "csr-limited" entitlement to access this
-   scope and the application itself.
 2. `urn:pingidentity:scope:admin:register_account`
    Allows creating user account profiles.
    This scope is configured with resource attributes that are defined by the Data Governance Broker's reference app
    schema.
-   With the default configuration, the user must have the "admin" or "csr" entitlement to access this scope and
-   the register new account action.
 3. `urn:pingidentity:scope:admin:entitlements`
    Allows searching, viewing and modifying user's entitlements.
    Entitlements are used by the OAuth2 Scope Policy to determine which scopes the user/application gets access to
    ("admin" entitlement gives access to all resource scopes, otherwise a scope is allowed if the user has an entitlement
    matching a tag on the resource scope.).
-   With the default configuration, the user must have the "admin" entitlement to access this scope and the entitlement
-   edit control on the user edit form.
 4. `urn:pingidentity:scope:admin:account_state`
    Allows reading and modifying user account state.  This includes the ability to enable and disable accounts.
-   With the default configuration, the user must have the "admin" or "csr" entitlement to access this scope and the
-   disable/enable account action.
-5. `urn:pingidentity:scope:admin:password_quality_requirements`
-   Allows reading a user account's password quality requirements.
-   With the default configuration, the user must have the "admin", "csr", or "csr-limited" entitlement to access this
-   scope and the password reset action.
-6. `urn:pingidentity:scope:admin:change_password`
+5. `urn:pingidentity:scope:admin:change_password`
    Allows changing and resetting a user's password.
-   With the default configuration, the user must have the "admin", "csr", or "csr-limited" entitlement to access this
-   scope and the password reset action.
-7. `urn:pingidentity:scope:admin:external_identities`
-   Allows reading and removing a user's external identity provider account links.
-   With the default configuration, the user must have the "admin" or "csr" entitlement to access this scope and the
-   external identities tab.
-8. `urn:pingidentity:scope:admin:sessions`
-   Allows reading and removing a user's active sessions.
-   With the default configuration, the user must have the "admin" or "csr" entitlement to access this scope and the
-   sessions tab.
-9. `urn:pingidentity:scope:admin:consents`
-   Allows reading and revoking a user's consent records.
-   With the default configuration, the user must have the "admin" or "csr" entitlement to access this scope and the
-   consents tab.
-10. `urn:pingidentity:scope:admin:validated_email_address`
-   Allows reading a user's validated email address.
-   With the default configuration, the user must have the "admin" or "csr" entitlement to access this scope and the
-   second factor tab.
-11. `urn:pingidentity:scope:admin:validated_phone_number`
-   Allows reading a user's validated phone number.
-   With the default configuration, the user must have the "admin" or "csr" entitlement to access this scope and the
-   second factor tab.
-12. `urn:pingidentity:scope:admin:totp`
-   Allows determining whether or not the user has a TOTP secret registered.
-   With the default configuration, the user must have the "admin" or "csr" entitlement to access this scope and the
-   second factor tab.
 
 As noted above the `urn:pingidentity:scope:admin:profiles` and `urn:pingidentity:scope:admin:register_account` scopes
 are configured with resource attributes that are defined by the Data Governance Broker's reference app schema.  If
@@ -276,26 +203,17 @@ can be found near the top of the script (search for the "export" statements). Va
    The redirect URI for the client in the OAuth flow.  This should be the address used to view the sample, and
    should be one of the Redirect URLs configured for the sample OAuth2 Client in the Data Governance Broker.  A value
    like "https://1.2.3.4:8443/samples/account-manager/" should be used.
-4. `IDENTITY_PROVIDER_TYPE`
-   The type of IDP referenced by `IDENTITY_PROVIDER_URL`.  Should be set to `IdentityProviderTypes.Broker` or
-   `IdentityProviderTypes.PingFederate`.
-5. `CLIENT_ID`
+4. `CLIENT_ID`
    The Client ID assigned to the Account Manager OAuth2 Client in the Data Governance Broker configuration.  This is set
    to a known value by the setup configuration script and should not typically need to be changed.
-6. `URN_PREFIX`
+5. `URN_PREFIX`
    A prefix used by various URNs in the Data Governance Broker configuration.
-7. `SCOPE_PREFIX`
+6. `SCOPE_PREFIX`
    A prefix used for this sample's scope URNs in the Data Governance Broker configuration.
-8. `REQUIRED_SCOPES`
+7. `REQUIRED_SCOPES`
    A list of scopes that are required for access to this sample.
-9. `OPTIONAL_SCOPES_BY_FUNCTIONALITY`
+8. `OPTIONAL_SCOPES_BY_FUNCTIONALITY`
    A list of scopes grouped by areas of functionality that are required for access to that functionality in this sample.
-10. `ACR_VALUES`
-   The ACR values the client will explicitly request in order of preference.  If this value is left empty the client
-   will not specify ACR values (if the IDP is a Data Governance Broker it will use the defaults configured for the
-   client).  Otherwise, a space-separated value like "MFA Default" should be used.
-11. `MESSAGING_PROVIDERS`
-   The providers used for second factor phone numbers.
 
 Changes such as using a schema other than the Data Governance Broker's reference app schema will require more extensive
 customization of the sample's files and configuration.  This includes modifying the application files as well as

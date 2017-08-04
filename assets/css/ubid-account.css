@@ -449,30 +449,6 @@ table {
   margin-bottom: 6px;
 }
 
-/* PASSWORD REQUIREMENTS POPOVER */
-.pass-req {
-  padding-bottom: 3px;
-}
-.pass-req-title {
-  font-size:14px;
-  font-weight:bold;
-  color:#333;
-  margin-top:-6px;
-  margin-bottom:8px;
-}
-.pass-req .glyphicon {
-  margin-right: 6px;
-}
-.pass-req.req-unknown {
-  color:#009;
-}
-.pass-req.req-ok {
-  color:#060;
-}
-.pass-req.req-missing {
-  color:#900
-}
-
 /* HANDLE LARGE SCREENS */
 @media (min-width: 1200px) {
 .login-div {
@@ -595,56 +571,6 @@ table {
 .login-container .interest .int-img.selected {
   opacity: 1.0;
 }
-.login-container .img1 {
-  background-image:url(../img/interest-icons/1.png);
-  height: 66px;
-  width: 66px;
-}
-.login-container .img2 {
-  background-image:url(../img/interest-icons/2.png);
-  height: 66px;
-  width: 66px;
-}
-.login-container .img3 {
-  background-image:url(../img/interest-icons/3.png);
-  height: 66px;
-  width: 66px;
-}
-.login-container .img4 {
-  background-image:url(../img/interest-icons/4.png);
-  height: 66px;
-  width: 66px;
-}
-.login-container .img5 {
-  background-image:url(../img/interest-icons/5.png);
-  height: 66px;
-  width: 66px;
-}
-.login-container .img6 {
-  background-image:url(../img/interest-icons/6.png);
-  height: 66px;
-  width: 66px;
-}
-.login-container .img7 {
-  background-image:url(../img/interest-icons/7.png);
-  height: 66px;
-  width: 66px;
-}
-.login-container .img8 {
-  background-image:url(../img/interest-icons/8.png);
-  height: 66px;
-  width: 66px;
-}
-.login-container .img9 {
-  background-image:url(../img/interest-icons/9.png);
-  height: 66px;
-  width: 66px;
-}
-.login-container .img10 {
-  background-image:url(../img/interest-icons/10.png);
-  height: 66px;
-  width: 66px;
-}
 .login-container .interest input[type="checkbox"] {
   position: absolute;
   top: 0;
@@ -686,7 +612,7 @@ h5 {
   word-break: break-all;
 }
 .break-word-or-hyphen {
-  word-break: break-word; /* non-standard for webkit */
+  word-break: break-all; /* non-standard for webkit */
   -webkit-hyphens: auto;
   -moz-hyphens: auto;
   -ms-hyphens: auto;

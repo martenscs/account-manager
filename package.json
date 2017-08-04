@@ -29,7 +29,7 @@
     "serve-test": "lite-server -c browser-sync-test.config.js",
     "test": "npm-run-all build-except-app -p watch serve-test",
     "jar": "jar cvf account-manager.war app dist index.html callback.html package.json system.config.js",
-    "prod": "npm run build && rm `find ./dist -name *.spec.js*` && npm run jar",
+    "prod": "npm run build && npm run jar",
     "postinstall": "typings install"
   },
   "dependencies": {
