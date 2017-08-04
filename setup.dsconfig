@@ -77,26 +77,6 @@ dsconfig create-oauth2-scope \
     --set tag:csr \
     --set tag:csr-limited
 
-dsconfig create-permitted-scope \
-    --client-name "Account Manager" \
-    --scope-name urn:pingidentity:scope:admin:profiles
-
-dsconfig create-permitted-scope \
-    --client-name "Account Manager" \
-    --scope-name urn:pingidentity:scope:admin:register_account
-
-dsconfig create-permitted-scope \
-    --client-name "Account Manager" \
-    --scope-name urn:pingidentity:scope:admin:entitlements
-
-dsconfig create-permitted-scope \
-    --client-name "Account Manager" \
-    --scope-name urn:pingidentity:scope:admin:account_state
-
-dsconfig create-permitted-scope \
-    --client-name "Account Manager" \
-    --scope-name urn:pingidentity:scope:admin:change_password
-
 dsconfig create-web-application-extension \
     --extension-name "Account Manager" \
     --set "description:Web Application Extension for hosting the Account Manager sample application." \
