@@ -10,7 +10,7 @@ Data Governance Broker sample UI for delegated account management
 
 1. Extract the account-manager.tar.gz file (found in the samples directory).
 2. Use dsconfig to run the commands in the setup.dsconfig file.  This will create a Web Application Extension, assign
-   the Web Application Extension to the HTTPS Connection Handler, and add the required Scope to
+   the Web Application Extension to the HTTPS Connection Handler, and add the required Scopes to
    the Data Governance Broker's configuration.  If you are installing the sample on a Data Governance Broker server
    group, you can apply the script to the entire server group using the "--applyChangeTo server-group" argument. For
    Data Governance Brokers added later, untar the account-manager archive before cloning the configuration from an
@@ -28,7 +28,7 @@ Data Governance Broker sample UI for delegated account management
    (see the "Customization" section for additional details).
 4. Deploy the custom account-manager.war file into your servlet container as appropriate (e.g. copy it into the webapps
    directory of your Tomcat installation and restart).
-5. Use dsconfig to run the commands in the setup.dsconfig file that add the required Scope to
+5. Use dsconfig to run the commands in the setup.dsconfig file that add the required Scopes to
    the Data Governance Broker's configuration.
 6. Use dsconfig or the console application to edit the HTTP Servlet Cross Origin Policy configuration to allow for
    cross-domain AJAX requests to the Data Governance Broker's SCIM2 HTTP Servlet Extension. The sample application's

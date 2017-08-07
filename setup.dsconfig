@@ -21,7 +21,7 @@ dsconfig create-oauth2-scope \
     --set resource-attribute:userName \
     --set resource-operation:modify \
     --set resource-operation:retrieve \
-    --set resource-operation:search \
+    --set resource-operation:search
 
 dsconfig create-oauth2-scope \
     --scope-name urn:pingidentity:scope:admin:register_account \
@@ -65,7 +65,6 @@ dsconfig create-oauth2-scope \
     --set "description:Change and reset passwords." \
     --set scim-resource-type:Users \
     --set "resource-attribute:password" \
-    --set resource-operation:retrieve \
     --set resource-operation:modify
 
 dsconfig create-web-application-extension \

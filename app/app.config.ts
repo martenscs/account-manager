@@ -10,16 +10,19 @@ import 'rxjs/add/operator/map';
 
 
 // NOTE: Override these for local development (examples below).
-export const IDENTITY_PROVIDER_URL = 'https://my-pingfed-server:9031'; // https://[ping-federate-hostname]:[oath-port]'
-export const CLIENT_REDIRECT_URL = '/samples/account-manager/callback.html'; // https://[data-governance-hostname]:[https-port]/callback.html
-export const RESOURCE_SERVER_URL = '/'; // https://[data-governance-hostname]:[https-port]
-
+//export const IDENTITY_PROVIDER_URL = 'https://my-pingfed-server:9031'; // https://[ping-federate-hostname]:[oath-port]'
+//export const CLIENT_REDIRECT_URL = '/samples/account-manager/callback.html'; // https://[data-governance-hostname]:[https-port]/callback.html
+//export const RESOURCE_SERVER_URL = '/'; // https://[data-governance-hostname]:[https-port]
+export const CLIENT_REDIRECT_URL = 'http://localhost:3006/callback.html';
+export const RESOURCE_SERVER_URL = 'https://broker.aus-qa1.ping-eng.com:8443';
+export const IDENTITY_PROVIDER_URL = 'https://ping-federate.aus-qa1.ping-eng.com:9031';
 
 export const IDENTITY_PROVIDER_AUTH_ENDPOINT = 'as/authorization.oauth2';
 export const IDENTITY_PROVIDER_LOGOUT_ENDPOINT = '/idp/startSLO.ping';
 
 
-export const CLIENT_ID = '@account-manager@';
+//export const CLIENT_ID = '@account-manager@';
+export const CLIENT_ID = 'test';
 export const URN_PREFIX = 'urn:pingidentity:';
 export const SCOPE_PREFIX = URN_PREFIX + 'scope:admin:';
 
