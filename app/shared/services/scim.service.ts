@@ -141,7 +141,7 @@ export class ScimService {
     if (profile) {
       this.profile.next(profile);
       if (clearCache) {
-        // also, pre-fetch the account state and password quality requirements so we have them up front if they disable
+        // also, pre-fetch the account state so we have it up front if it disables
         // account or change password
         this.fetchAccountState();
       }
@@ -188,6 +188,9 @@ export class ScimService {
     var query = 'userName ' + nonIndexedOperation + ' "' + filter + '" or ' +
         'name.givenName ' + indexedOperation + ' "' + filter + '" or ' +
         'name.familyName ' + indexedOperation + ' "' + filter + '" or ' +
+        'name.formatted ' + indexedOperation + ' "' + filter + '" or ' +
+        'emails.value ' + nonIndexedOperation + ' "' + filter + '" or ' +
+        'phoneNumbers.value ' + nonIndexedOperation + ' "' + filter + '"';
         'name.formatted ' + indexedOperation + ' "' + filter + '" or ';
 
     // NOTE: use CustomQueryEncoder so that we escape any plus signs in the filter

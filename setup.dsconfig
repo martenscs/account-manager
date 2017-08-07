@@ -1,8 +1,5 @@
-#
-# This dsconfig batch file creates the Account Manager OAuth2 Client within the
-# Data Governance Broker and configures the Web Application Extension and Connection
-# Handler objects for the Data Governance Broker to host it.
-#
+#This dsconfig batch file creates the OAuth2 Scope objects within the Data Governance Broker and configures the
+#Web Application Extension and Connection Handler objects for the Data Governance Broker to host the Account Manager Sample.
 
 dsconfig create-oauth2-scope \
     --scope-name urn:pingidentity:scope:admin:profiles \
@@ -25,8 +22,6 @@ dsconfig create-oauth2-scope \
     --set resource-operation:modify \
     --set resource-operation:retrieve \
     --set resource-operation:search \
-    --set tag:csr \
-    --set tag:csr-limited
 
 dsconfig create-oauth2-scope \
     --scope-name urn:pingidentity:scope:admin:register_account \
@@ -40,8 +35,8 @@ dsconfig create-oauth2-scope \
     --set resource-attribute:phoneNumbers \
     --set resource-attribute:photoURLs \
     --set resource-attribute:userName \
-    --set resource-operation:create \
-    --set tag:csr
+    --set resource-operation:create
+
 
 dsconfig create-oauth2-scope \
     --scope-name urn:pingidentity:scope:admin:entitlements \
@@ -62,20 +57,16 @@ dsconfig create-oauth2-scope \
     --set "scim-sub-resource-type:Account State" \
     --set "resource-attribute:*" \
     --set resource-operation:retrieve \
-    --set resource-operation:modify \
-    --set tag:csr
+    --set resource-operation:modify
 
 dsconfig create-oauth2-scope \
     --scope-name urn:pingidentity:scope:admin:change_password \
     --type resource \
     --set "description:Change and reset passwords." \
     --set scim-resource-type:Users \
-    --set "scim-sub-resource-type:Password Update" \
-    --set "resource-attribute:*" \
+    --set "resource-attribute:password" \
     --set resource-operation:retrieve \
-    --set resource-operation:modify \
-    --set tag:csr \
-    --set tag:csr-limited
+    --set resource-operation:modify
 
 dsconfig create-web-application-extension \
     --extension-name "Account Manager" \

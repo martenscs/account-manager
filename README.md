@@ -10,7 +10,7 @@ Data Governance Broker sample UI for delegated account management
 
 1. Extract the account-manager.tar.gz file (found in the samples directory).
 2. Use dsconfig to run the commands in the setup.dsconfig file.  This will create a Web Application Extension, assign
-   the Web Application Extension to the HTTPS Connection Handler, and add the required Scope and OAuth Client objects to
+   the Web Application Extension to the HTTPS Connection Handler, and add the required Scope to
    the Data Governance Broker's configuration.  If you are installing the sample on a Data Governance Broker server
    group, you can apply the script to the entire server group using the "--applyChangeTo server-group" argument. For
    Data Governance Brokers added later, untar the account-manager archive before cloning the configuration from an
@@ -28,11 +28,9 @@ Data Governance Broker sample UI for delegated account management
    (see the "Customization" section for additional details).
 4. Deploy the custom account-manager.war file into your servlet container as appropriate (e.g. copy it into the webapps
    directory of your Tomcat installation and restart).
-5. Use dsconfig to run the commands in the setup.dsconfig file that add the required Scope and OAuth Client objects to
+5. Use dsconfig to run the commands in the setup.dsconfig file that add the required Scope to
    the Data Governance Broker's configuration.
-6. Use dsconfig or the console application to add the URL the sample application will be accessible at to the Account
-   Manager OAuth2 Client's Redirect URLs list.
-7. Use dsconfig or the console application to edit the HTTP Servlet Cross Origin Policy configuration to allow for
+6. Use dsconfig or the console application to edit the HTTP Servlet Cross Origin Policy configuration to allow for
    cross-domain AJAX requests to the Data Governance Broker's SCIM2 HTTP Servlet Extension. The sample application's
    origin and the Data Governance Broker's origin should be added to "cors-allowed-origins", and "GET", "DELETE", "POST"
    and "PUT" should be added to "cors-allowed-methods". E.g.,
@@ -51,9 +49,8 @@ dsconfig create-http-servlet-cross-origin-policy --policy-name account-manager \
 
 ### Deployment with PingFederate as the Identity Provider
 
-The application's default configuration assumes a single Data Governance Broker server is performing both the Identity
-Provider (IDP) and Resource Server roles.  However, the application can also be configured to use a PingFederate server
-as the IDP.
+The application's default configuration assumes a Data Governance Broker server is performing the Resource Server role 
+and a PingFederate server is performing the Identity Provider (IDP) role.
 
 The steps below assume that both the Data Governance Broker and PingFederate server have been configured so that the
 Broker's SCIM endpoint can accept and validate the PingFederate server's access tokens.  Refer to the Data Governance
@@ -114,17 +111,6 @@ dsconfig set-http-servlet-extension-prop --extension-name SCIM2 --set cross-orig
 8. Access the sample at the appropriate address and context.
 
 
-### Additional Configuration for Password Reset
-
-Additional configuration is required in order for users to be prompted to change their password after this sample is
-used to create their account or reset their password.
-
-These prompts are controlled by the force-change-on-add and force-change-on-reset settings for the user's Password
-Policy in the Directory Server.
-
-The settings both default to "false", and should be changed to "true" to enable these flows.
-
-
 ### Scopes
 
 
@@ -140,9 +126,6 @@ The sample's default configuration depends on scopes that are created by the set
    schema.
 3. `urn:pingidentity:scope:admin:entitlements`
    Allows searching, viewing and modifying user's entitlements.
-   Entitlements are used by the OAuth2 Scope Policy to determine which scopes the user/application gets access to
-   ("admin" entitlement gives access to all resource scopes, otherwise a scope is allowed if the user has an entitlement
-   matching a tag on the resource scope.).
 4. `urn:pingidentity:scope:admin:account_state`
    Allows reading and modifying user account state.  This includes the ability to enable and disable accounts.
 5. `urn:pingidentity:scope:admin:change_password`
@@ -176,12 +159,10 @@ environment.
 If you wish to run the application in the development environment ("npm run dev"), some additional configuration will be
 required:
 
-1. The dev server's redirect URL will need to be added to the OAuth2 Client configuration via dsconfig or the console
-   application (see the commented out command in setup.dsconfig).
-2. The `IDENTITY_PROVIDER_URL` and `RESOURCE_SERVER_URL` constants in app/app.config.ts will need to be updated to use
+1. The `IDENTITY_PROVIDER_URL` and `RESOURCE_SERVER_URL` constants in app/app.config.ts will need to be updated to use
    absolute URLs since the application will be running in the development environment rather than the Data Governance
    Broker (see the commented out example override values in app/app.config.ts).
-3. The dev server's origin (http://localhost:3006) will need to be added to the HTTP Servlet Cross Origin Policy
+2. The dev server's origin (http://localhost:3006) will need to be added to the HTTP Servlet Cross Origin Policy
    configuration to allow for cross-domain AJAX requests to the Data Governance Broker's SCIM2 HTTP Servlet Extension
    (see step 7 in the "Advanced Deployment" section above).
 
@@ -204,12 +185,11 @@ can be found near the top of the script (search for the "export" statements). Va
    should be one of the Redirect URLs configured for the sample OAuth2 Client in the Data Governance Broker.  A value
    like "https://1.2.3.4:8443/samples/account-manager/" should be used.
 4. `CLIENT_ID`
-   The Client ID assigned to the Account Manager OAuth2 Client in the Data Governance Broker configuration.  This is set
-   to a known value by the setup configuration script and should not typically need to be changed.
+   The Client ID assigned to the Account Manager OAuth2 Client in the PingFederate configuration.  
 5. `URN_PREFIX`
-   A prefix used by various URNs in the Data Governance Broker configuration.
+   A prefix used by various URNs in the Data Governance Broker and the PingFederate configuration.
 6. `SCOPE_PREFIX`
-   A prefix used for this sample's scope URNs in the Data Governance Broker configuration.
+   A prefix used for this sample's scope URNs in the Data Governance Broker and the PingFederate configuration.
 7. `REQUIRED_SCOPES`
    A list of scopes that are required for access to this sample.
 8. `OPTIONAL_SCOPES_BY_FUNCTIONALITY`

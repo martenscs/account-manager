@@ -612,7 +612,7 @@ h5 {
   word-break: break-all;
 }
 .break-word-or-hyphen {
-  word-break: break-all; /* non-standard for webkit */
+  word-break: break-word; /* non-standard for webkit */
   -webkit-hyphens: auto;
   -moz-hyphens: auto;
   -ms-hyphens: auto;
