@@ -141,7 +141,7 @@ export class ScimService {
     if (profile) {
       this.profile.next(profile);
       if (clearCache) {
-        // also, pre-fetch the account state so we have it up front if they disable the account or change password
+        // also, pre-fetch the account state so we have it up front if they disable the account
         this.fetchAccountState();
       }
     }
