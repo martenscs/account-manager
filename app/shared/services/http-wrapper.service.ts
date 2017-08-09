@@ -11,8 +11,8 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/share';
 
 
-import { Configuration, IDENTITY_PROVIDER_URL, RESOURCE_SERVER_URL, CLIENT_REDIRECT_URL, CLIENT_ID, ACR_VALUES,
-          LoadingService } from '../index';
+import { Configuration, IDENTITY_PROVIDER_URL, RESOURCE_SERVER_URL, CLIENT_REDIRECT_URL, CLIENT_ID,
+          IDENTITY_PROVIDER_AUTH_ENDPOINT, IDENTITY_PROVIDER_LOGOUT_ENDPOINT, LoadingService } from '../index';
 
 
 export const HTTP_LOADING_KEY = 'http';
@@ -112,40 +112,19 @@ export class HttpWrapper {
   }
 
   public getAuthorizeUrl(state: number): string {
-    var url = this.buildUrl(IDENTITY_PROVIDER_URL, this.configuration.idpConfig.AUTH_ENDPOINT) + '?' +
+    var url = this.buildUrl(IDENTITY_PROVIDER_URL, IDENTITY_PROVIDER_AUTH_ENDPOINT) + '?' +
         'response_type=' + encodeURIComponent('token') + '&' +
         'client_id=' + encodeURIComponent(CLIENT_ID) + '&' +
         'redirect_uri=' + encodeURIComponent(CLIENT_REDIRECT_URL) + '&' +
         'scope=' + encodeURIComponent(this.configuration.requestedScopes) + '&' +
         'state=' + state;
-    if (ACR_VALUES) {
-      url += '&acr_values=' + encodeURIComponent(ACR_VALUES);
-    }
     return url;
   }
 
   public getLogoutUrl(): string {
-    var url = this.buildUrl(IDENTITY_PROVIDER_URL, this.configuration.idpConfig.LOGOUT_ENDPOINT);
-    if (this.configuration.isBrokerIdp) {
-      url += '?post_logout_redirect_uri=' + encodeURIComponent(CLIENT_REDIRECT_URL);
-    }
-    else if (this.configuration.isPingFederateIdp) {
-      url += '?TargetResource=' + encodeURIComponent(CLIENT_REDIRECT_URL);
-    }
+    var url = this.buildUrl(IDENTITY_PROVIDER_URL, IDENTITY_PROVIDER_LOGOUT_ENDPOINT);
+    url += '?TargetResource=' + encodeURIComponent(CLIENT_REDIRECT_URL);
     return url;
-  }
-
-  public revokeAndLogout() {
-    // NOTE: this function is currently only used when PingFederate is the IDP, so assumes the PF revoke endpoint's
-    // parameters
-    var data = new URLSearchParams();
-    data.append('token', this.bearerToken);
-    data.append('client_id', CLIENT_ID);
-
-    // we ignore success or error and always navigate to the logout URL after attempting the revoke
-    this.http.post(this.buildUrl(IDENTITY_PROVIDER_URL, this.configuration.idpConfig.REVOKE_ENDPOINT), data)
-        .finally(() => this.window.location.assign(this.getLogoutUrl()))
-        .subscribe(() => {}, () => {});
   }
 
   private buildUrl(base: string, path: string): string {

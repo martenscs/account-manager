@@ -36,26 +36,6 @@ export class ScimService {
   private accountState: BehaviorSubject<any> = new BehaviorSubject(undefined);
   private _accountState$: Observable<any> = this.accountState.asObservable();
 
-  private passwordQualityRequirements: BehaviorSubject<any> = new BehaviorSubject(undefined);
-  private _passwordQualityRequirements$: Observable<any> = this.passwordQualityRequirements.asObservable();
-
-  private sessions: BehaviorSubject<any[]> = new BehaviorSubject(undefined);
-  private _sessions$: Observable<any> = this.sessions.asObservable();
-
-  private consents: BehaviorSubject<any[]> = new BehaviorSubject(undefined);
-  private _consents$: Observable<any> = this.consents.asObservable();
-
-  private externalIdentities: BehaviorSubject<any[]> = new BehaviorSubject(undefined);
-  private _externalIdentities$: Observable<any> = this.externalIdentities.asObservable();
-
-  private validatedEmailAddress: BehaviorSubject<any> = new BehaviorSubject(undefined);
-  private _validatedEmailAddress$: Observable<any> = this.validatedEmailAddress.asObservable();
-
-  private validatedPhoneNumber: BehaviorSubject<any> = new BehaviorSubject(undefined);
-  private _validatedPhoneNumber$: Observable<any> = this.validatedPhoneNumber.asObservable();
-
-  private totpSharedSecret: BehaviorSubject<any> = new BehaviorSubject(undefined);
-  private _totpSharedSecret$: Observable<any> = this.totpSharedSecret.asObservable();
 
   private criticalError: BehaviorSubject<any> = new BehaviorSubject(undefined);
   private _criticalError$: Observable<any> = this.criticalError.asObservable();
@@ -98,22 +78,20 @@ export class ScimService {
               'sent with the request (' + this.window.sessionStorage.getItem(STORAGE_KEY.STATE) + ')');
         }
         else {
-          // validate the granted scopes (retrieved either by query parameter (Broker) or JWT (PingFederate))
-          grantedScopes = params['scope'] ? params['scope'].split(' ') : [];
-          if (grantedScopes.length === 0) {
+            // validate the granted scopes in the JWT token
+            grantedScopes = [];
             parts = params['access_token'].split('.');
             if (parts.length === 3) {
-              jsonToken = JSON.parse(atob(parts[1]));
-              if (jsonToken && jsonToken.scope) {
-                grantedScopes = jsonToken.scope;
-              }
+                jsonToken = JSON.parse(atob(parts[1]));
+                if (jsonToken && jsonToken.scope) {
+                    grantedScopes = jsonToken.scope;
+                }
             }
-          }
-          this.configuration.grantedScopes = grantedScopes;
-          if (! this.configuration.hasRequiredScopes()) {
-            this.error = this.formatError('The application was not granted the required scopes.  Make sure you are ' +
-                'signing in with a privileged account.');
-          }
+            this.configuration.grantedScopes = grantedScopes;
+            if (! this.configuration.hasRequiredScopes()) {
+                this.error = this.formatError('The application was not granted the required scopes.  Make sure you are ' +
+                    'signing in with a privileged account.');
+            }
         }
         if (! this.error) {
           this.httpWrapper.bearerToken = params['access_token'];
@@ -150,59 +128,6 @@ export class ScimService {
     return this._accountState$;
   }
 
-  get passwordQualityRequirements$(): Observable<any> {
-    // lazy-load the requirements
-    if (! this.passwordQualityRequirements.getValue()) {
-      this.fetchPasswordQualityRequirements();
-    }
-    return this._passwordQualityRequirements$;
-  }
-
-  get sessions$(): Observable<any[]> {
-    // lazy-load the sessions (and force refresh every subscription)
-    this.fetchSessions();
-    return this._sessions$;
-  }
-
-  get consents$(): Observable<any[]> {
-    // lazy-load the consents
-    if (! this.consents.getValue()) {
-      this.fetchConsents();
-    }
-    return this._consents$;
-  }
-
-  get externalIdentities$(): Observable<any[]> {
-    // lazy-load the external identities
-    if (! this.externalIdentities.getValue()) {
-      this.fetchExternalIdentities();
-    }
-    return this._externalIdentities$;
-  }
-
-  get validatedEmailAddress$(): Observable<any[]> {
-    // lazy-load the validated email addresses
-    if (! this.validatedEmailAddress.getValue()) {
-      this.fetchValidatedEmailAddress();
-    }
-    return this._validatedEmailAddress$;
-  }
-
-  get validatedPhoneNumber$(): Observable<any[]> {
-    // lazy-load the validated phone number
-    if (! this.validatedPhoneNumber.getValue()) {
-      this.fetchValidatedPhoneNumber();
-    }
-    return this._validatedPhoneNumber$;
-  }
-
-  get totpSharedSecret$(): Observable<any[]> {
-    // lazy-load the TOTP secret information
-    if (! this.totpSharedSecret.getValue()) {
-      this.fetchTotpSharedSecret();
-    }
-    return this._totpSharedSecret$;
-  }
 
   get criticalError$(): Observable<any> {
     return this._criticalError$;
@@ -212,21 +137,12 @@ export class ScimService {
     if (clearCache) {
       this.profile.next(undefined);
       this.accountState.next(undefined);
-      this.passwordQualityRequirements.next(undefined);
-      this.sessions.next(undefined);
-      this.consents.next(undefined);
-      this.externalIdentities.next(undefined);
-      this.validatedEmailAddress.next(undefined);
-      this.validatedPhoneNumber.next(undefined);
-      this.totpSharedSecret.next(undefined);
     }
     if (profile) {
       this.profile.next(profile);
       if (clearCache) {
-        // also, pre-fetch the account state and password quality requirements so we have them up front if they disable
-        // account or change password
+        // also, pre-fetch the account state so we have it up front if they disable the account
         this.fetchAccountState();
-        this.fetchPasswordQualityRequirements();
       }
     }
   }
@@ -252,124 +168,6 @@ export class ScimService {
     return o;
   }
 
-  fetchPasswordQualityRequirements(): Observable<any> {
-    if (! this.configuration.hasRequiredScopes(Functionality.Password)) {
-      return Observable.empty();
-    }
-    var o = this.httpWrapper.get(this.getAccountUrl('passwordQualityRequirements'));
-    o.subscribe((data: any) => this.passwordQualityRequirements.next(data),
-        this.handleError);
-    return o;
-  }
-
-  fetchSessions(): Observable<any[]> {
-    if (! this.configuration.hasRequiredScopes(Functionality.Sessions)) {
-      return Observable.empty();
-    }
-    var o = this.httpWrapper.get(this.getAccountUrl('sessions'));
-    o.subscribe((data: any) => {
-          if (data.Resources) {
-            data.Resources.forEach((session: any) => {
-              session.platform = platform.parse(session.userAgentString);
-            });
-          }
-          this.sessions.next(data.Resources);
-        },
-        this.handleError
-    );
-    return o;
-  }
-
-  fetchConsents(): Observable<any[]> {
-    if (! this.configuration.hasRequiredScopes(Functionality.Consents)) {
-      return Observable.empty();
-    }
-    var o = this.httpWrapper.get(this.getAccountUrl('consents'));
-    o.subscribe(
-        (data: any) => {
-          if (data.Resources) {
-            data.Resources.forEach(this.processRecord);
-          }
-          this.consents.next(data.Resources);
-        },
-        this.handleError
-    );
-    return o;
-  }
-
-  fetchExternalIdentities(): Observable<any[]> {
-    if (! this.configuration.hasRequiredScopes(Functionality.ExternalIdentities)) {
-      return Observable.empty();
-    }
-    var o = this.httpWrapper.get(this.getAccountUrl('externalIdentities'));
-    o.subscribe(
-        (data: any) => this.externalIdentities.next(data.Resources),
-        this.handleError
-    );
-    return o;
-  }
-
-  fetchValidatedEmailAddress(): Observable<any> {
-    if (! this.configuration.hasRequiredScopes(Functionality.SecondFactor)) {
-      return Observable.empty();
-    }
-    var attributePath = 'secondFactorEmail';
-    var o = this.httpWrapper.get(this.getAccountUrl('validatedEmailAddresses' +
-        '?filter=attributePath eq "' + attributePath + '"'));
-    o.subscribe(
-        (data: any) => {
-          if (! data.totalResults) {
-            this.alertService.add('validatedEmailAddresses returned no results for attributePath "' + attributePath +
-                '". Verify the Email Validator SCIM Sub Resource Type Handler is configured properly for this sample.');
-            data = undefined;
-          }
-          else {
-            data = this.processRecord(data.Resources[0]);
-          }
-          return this.validatedEmailAddress.next(data);
-        },
-        this.handleError
-    );
-    return o;
-  }
-
-  fetchValidatedPhoneNumber(): Observable<any> {
-    if (! this.configuration.hasRequiredScopes(Functionality.SecondFactor)) {
-      return Observable.empty();
-    }
-    var attributePath = 'secondFactorPhoneNumber';
-    var o = this.httpWrapper.get(this.getAccountUrl('validatedPhoneNumbers' +
-        '?filter=attributePath eq "' + attributePath + '"'));
-    o.subscribe(
-        (data: any) => {
-          if (! data.totalResults) {
-            this.alertService.add('validatedPhoneNumbers returned no results for attributePath "' + attributePath +
-                '". Verify the Telephony Validator SCIM Sub Resource Type Handler is configured properly for this ' +
-                'sample.');
-            data = undefined;
-          }
-          else {
-            data = this.processRecord(data.Resources[0]);
-          }
-          return this.validatedPhoneNumber.next(data);
-        },
-        this.handleError
-    );
-    return o;
-  }
-
-  fetchTotpSharedSecret(): Observable<any> {
-    if (! this.configuration.hasRequiredScopes(Functionality.SecondFactor)) {
-      return Observable.empty();
-    }
-    var o = this.httpWrapper.get(this.getAccountUrl('totpSharedSecret'));
-    o.subscribe(
-        (data: any) => this.totpSharedSecret.next(this.processRecord(data)),
-        this.handleError
-    );
-    return o;
-  }
-
   queryUsers(filter: string): Observable<any> {
     // remove any double-quotes in the filter (we don't escape as it is unlikely they intend to search for
     //   quotes in these fields...)
@@ -392,6 +190,7 @@ export class ScimService {
         'name.formatted ' + indexedOperation + ' "' + filter + '" or ' +
         'emails.value ' + nonIndexedOperation + ' "' + filter + '" or ' +
         'phoneNumbers.value ' + nonIndexedOperation + ' "' + filter + '"';
+        'name.formatted ' + indexedOperation + ' "' + filter + '" or ';
 
     // NOTE: use CustomQueryEncoder so that we escape any plus signs in the filter
     var params = new URLSearchParams('', new CustomQueryEncoder());
@@ -424,44 +223,9 @@ export class ScimService {
     o.subscribe((data: any) => {
           // select the new profile
           this.selectProfile(new Profile(data));
-          // reset the account's password so we have a known value
-          if (this.configuration.hasRequiredScopes(Functionality.Password)) {
-            this.resetPassword();
-          }
         },
         this.handleError
     );
-    return o;
-  }
-
-  resetPassword(newPassword?: string, currentPassword?: string): Observable<any> {
-    var data: any = {
-      schemas: [ URN_PREFIX + 'scim:api:messages:2.0:PasswordUpdateRequest' ]
-    };
-    if (newPassword) {
-      data.newPassword = newPassword;
-    }
-    if (currentPassword) {
-      data.currentPassword = currentPassword;
-    }
-    var o = this.httpWrapper.put(this.getAccountUrl('password'), JSON.stringify(data));
-    o.subscribe((data: any) => {
-          if (data.generatedPassword) {
-            this.alertService.add('This user\'s password was set to "' + data.generatedPassword + '".',
-                AlertType.Info, true); // sticky alert
-          }
-        },
-        (err: any) => {
-          var error: any;
-          // provide a friendly error message if the error is due to incorrect current password provided
-          if (currentPassword && err.status === 401) {
-            error = HttpWrapper.parseResponse(err);
-            if (error && error.detail && error.detail.indexOf('invalid credentials') !== -1) {
-              err = 'The current password is incorrect.';
-            }
-          }
-          return this.handleError(err);
-        });
     return o;
   }
 
@@ -475,49 +239,7 @@ export class ScimService {
     return o;
   }
 
-  removeExternalIdentity(externalIdentity: any): Observable<any> {
-    var o = this.httpWrapper.delete(this.getLocation(externalIdentity));
-    o.subscribe(
-        () => {
-          var identities: any[] = this.externalIdentities.getValue();
-          var identity: any = identities.find((ei: any) => ei.id === externalIdentity.id);
-          identity.providerUserId = null;
-          this.externalIdentities.next(identities);
-        },
-        this.handleError
-    );
-    return o;
-  }
 
-  removeSession(session: any): Observable<any> {
-    return this.removeSubjectEntry(this.sessions, session);
-  }
-
-  removeConsent(consent: any): Observable<any> {
-    return this.removeSubjectEntry(this.consents, consent);
-  }
-
-  toggleSecondFactorEnable(enable: boolean): Observable<any> {
-    var profile = Utility.clone(this.profile.getValue());
-    profile.record.secondFactorEnabled = enable;
-
-    return this.updateProfile(profile);
-  }
-
-  getDefaultProviderIconUrl(provider: any): string {
-    if (provider.iconUrl) {
-      return provider.iconUrl;
-    }
-    switch (provider.type) {
-      case 'facebook':
-        return 'dist/img/facebook_32.png';
-      case 'google':
-        return 'dist/img/google_32.png';
-      case 'oidc':
-        return 'dist/img/openid_32.png';
-    }
-    return 'dist/img/generic-app.png';
-  }
 
   private removeSubjectEntry(subject: BehaviorSubject<any[]>, obj: any): Observable<any> {
     var o = this.httpWrapper.delete(this.getLocation(obj));

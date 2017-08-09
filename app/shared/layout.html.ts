@@ -23,11 +23,7 @@ export const template = `
         </div>
         <div class="login-footer">
           <div class="footer-contents">
-            <a *ngIf="! isPingFederateIdp"
-               [href]="logoutUrl">Sign Out</a>
-            <a *ngIf="isPingFederateIdp"
-               (click)="revokeAndLogout()"
-               href="javascript:void(0)">Sign Out</a>
+            <a [href]="logoutUrl">Sign Out</a>
             <span class="separator">|</span>
             <a (click)="showAbout = true"
                href="javascript:void(0)">Powered by Ping Identity Data Governance Broker</a>

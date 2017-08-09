@@ -13,13 +13,9 @@ import { AppComponent } from './app.component';
 import { LayoutComponent, ConfirmComponent, AddressPipe, CapitalizePipe, ElapsedTimePipe, IfFunctionalityDirective,
     AlertService, LoadingService, HttpWrapper, ScimService, SelectProfileGuard } from './shared/index'
 import { IndexComponent, SearchComponent, NoSelectionComponent } from './index/index';
-import { ProfileViewComponent, ProfileEditComponent, ResetPasswordComponent, PasswordRequirementsComponent,
+import { ProfileViewComponent, ProfileEditComponent,
     RawComponent, RegisterComponent } from './profile/index';
-import { ConsentListComponent, ConsentDetailComponent } from './consent/index';
 import { PreferenceViewComponent, CommunicationContentEditComponent, TopicEditComponent } from './preference/index';
-import { SecondFactorViewComponent } from './second-factor/index';
-import { ExternalIdentityListComponent } from './external-identity/index';
-import { SessionListComponent } from './session/index';
 import { ErrorComponent } from './error/index';
 import { Configuration } from './app.config';
 import { ROUTES } from './app.routes';
@@ -42,18 +38,11 @@ import { ROUTES } from './app.routes';
     IndexComponent,
     ProfileViewComponent,
     ProfileEditComponent,
-    ResetPasswordComponent,
-    PasswordRequirementsComponent,
     RawComponent,
     RegisterComponent,
-    ConsentListComponent,
-    ConsentDetailComponent,
     PreferenceViewComponent,
     CommunicationContentEditComponent,
     TopicEditComponent,
-    SecondFactorViewComponent,
-    ExternalIdentityListComponent,
-    SessionListComponent,
     ErrorComponent,
     AddressPipe,
     CapitalizePipe,

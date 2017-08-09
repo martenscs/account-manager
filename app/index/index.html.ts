@@ -47,9 +47,6 @@ export const template = `
                <span *ngIf="! accountState.accountDisabled">Disable</span>
                Account</a>
           </li>
-          <li *ngIf="profile && configuration.hasRequiredScopes(functionalityEnum.Password)">
-            <a [routerLink]="['/profile/reset-password']">Reset Password</a>
-          </li>
           <li *ngIf="profile">
                 <a (click)="refresh()"
                    href="javascript:void(0)">Refresh Account</a>
@@ -63,26 +60,10 @@ export const template = `
       class="nav nav-tabs mtm mbxl">
     <li [routerLinkActive]="['active']"
         role="presentation"><a [routerLink]="['/profile']" 
-                               href="javascript:void(0)">Profile</a></li>    
-    <li *ubidIfFunctionality="functionalityEnum.SecondFactor"
-        [routerLinkActive]="['active']"
-        role="presentation"><a [routerLink]="['/second-factor']"
-                               href="javascript:void(0)">Second Factor</a></li>
-    <li *ubidIfFunctionality="functionalityEnum.ExternalIdentities"
-        [routerLinkActive]="['active']"
-        role="presentation"><a [routerLink]="['/external-identity']"
-                               href="javascript:void(0)">Linked Accounts</a></li>
-    <li *ubidIfFunctionality="functionalityEnum.Sessions"
-        [routerLinkActive]="['active']"
-        role="presentation"><a [routerLink]="['/session']" 
-                               href="javascript:void(0)">Sessions</a></li>
-    <li *ubidIfFunctionality="functionalityEnum.Consents"
-        [routerLinkActive]="['active']"
-        role="presentation"><a [routerLink]="['/consent']"
-                               href="javascript:void(0)">Consent</a></li>
+                               href="javascript:void(0)">Profile</a></li> 
     <li [routerLinkActive]="['active']"
         role="presentation"><a [routerLink]="['/preference']"
-                               href="javascript:void(0)">Preferences</a></li>
+                               href="javascript:void(0)">Preferences</a></li>   
   </ul>
         
   <router-outlet></router-outlet>
