@@ -60,8 +60,8 @@ dsconfig create-oauth2-scope \
     --set resource-operation:modify
 
 # Uncomment the following two command to create a Web Application Extension for your customized war file and associate
-# it with the Data Governance Server's HTTPS Connection Handler. Make sure to update the "war-file" parameter value
-# first to point to your war file.
+# it with the Data Governance Server's HTTPS Connection Handler. Make sure you update the "war-file" parameter value to
+# point to your war file.
 #
 # dsconfig create-web-application-extension \
 #     --extension-name "Account Manager" \

@@ -106,7 +106,7 @@ as Tomcat or Jetty.  It can also be run in the development environment without a
 4. Build and package the application in a war file using the "npm run prod" script as per the "Building the project"
    section above.
 5. Edit the setup.dsconfig file and uncomment the commands to create a Web Application Extension and assign it to the
-   HTTPS Connection Handler (make sure to update the "war-file" parameter value to point to your war file).
+   HTTPS Connection Handler (make sure you update the "war-file" parameter value to point to your war file).
 6. Use dsconfig to run the commands in the setup.dsconfig file.  This will create a Web Application Extension, assign
    the Web Application Extension to the HTTPS Connection Handler, and add the required Scopes to
    the Data Governance Server's configuration.  If you are installing the sample on a Data Governance Server
