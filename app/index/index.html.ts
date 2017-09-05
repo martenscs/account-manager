@@ -40,13 +40,6 @@ export const template = `
           <li *ubidIfFunctionality="functionalityEnum.Register">
             <a [routerLink]="['/register']">Register New Account</a>
           </li>
-          <li *ngIf="profile && accountState && configuration.hasRequiredScopes(functionalityEnum.Account)">
-            <a (click)="toggleDisabled()"
-               href="javascript:void(0)">
-               <span *ngIf="accountState.accountDisabled">Enable</span>
-               <span *ngIf="! accountState.accountDisabled">Disable</span>
-               Account</a>
-          </li>
           <li *ngIf="profile">
                 <a (click)="refresh()"
                    href="javascript:void(0)">Refresh Account</a>
@@ -73,11 +66,4 @@ export const template = `
       [show]="showSearch"
       (closed)="searchClosed($event)">
   </ubid-search>
-  
-  <ubid-confirm
-    [action]="'Disable Account'"
-    [prompt]="'If you continue, this user will no longer be able to sign in with this account.'"
-    [show]="showConfirmDisable"
-    (closed)="disableConfirmClosed($event)">
-  </ubid-confirm>
 `;

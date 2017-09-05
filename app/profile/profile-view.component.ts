@@ -19,10 +19,8 @@ export class ProfileViewComponent implements OnInit, OnDestroy  {
   // results to template local variables:
   //    https://github.com/angular/angular/issues/2451
   private profileSubscription: Subscription;
-  private accountStateSubscription: Subscription;
 
   profile: Profile;
-  accountState: any;
   entitlements: string[];
 
   constructor(private configuration: Configuration, private scimService: ScimService) {}
@@ -35,17 +33,11 @@ export class ProfileViewComponent implements OnInit, OnDestroy  {
             this.entitlements = Profile.getEntitlementValues(profile);
           }
         });
-
-    this.accountStateSubscription = this.scimService.accountState$
-        .subscribe((accountState: any) => this.accountState = accountState);
   }
 
   ngOnDestroy() {
     if (this.profileSubscription) {
       this.profileSubscription.unsubscribe();
-    }
-    if (this.accountStateSubscription) {
-      this.accountStateSubscription.unsubscribe();
     }
   }
 }

@@ -6,8 +6,7 @@
 import { Routes } from '@angular/router';
 
 import { IndexComponent, NoSelectionComponent } from './index/index';
-import { ProfileViewComponent, ProfileEditComponent, RawComponent,
-    RegisterComponent } from './profile/index';
+import { ProfileViewComponent, ProfileEditComponent, RawComponent, RegisterComponent } from './profile/index';
 import { PreferenceViewComponent, CommunicationContentEditComponent, TopicEditComponent } from './preference/index';
 import { ErrorComponent } from './error/index';
 import { SelectProfileGuard } from './shared/index';

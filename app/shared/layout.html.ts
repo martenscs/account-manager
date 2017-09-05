@@ -26,7 +26,7 @@ export const template = `
             <a [href]="logoutUrl">Sign Out</a>
             <span class="separator">|</span>
             <a (click)="showAbout = true"
-               href="javascript:void(0)">Powered by Ping Identity Data Governance Broker</a>
+               href="javascript:void(0)">Powered by Ping Identity Data Governance Server</a>
           </div>
         </div>
       </div>
@@ -46,7 +46,7 @@ export const template = `
         <div class="ab-app-logo">
           <img src="dist/img/ping-identity-square-logo.png" alt="Ping Identity Logo">
         </div>
-        <div class="ab-app-name">Data Governance Broker Account Manager Sample UI</div>
+        <div class="ab-app-name">Data Governance Server Account Manager Sample UI</div>
         <div class="ab-app-version"> {{ configuration.version }}</div>
         <div class="ab-contact-info"> Ping Identity Corporation
           <br> 1001 17th Street

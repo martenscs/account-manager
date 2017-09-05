@@ -13,8 +13,7 @@ import { AppComponent } from './app.component';
 import { LayoutComponent, ConfirmComponent, AddressPipe, CapitalizePipe, ElapsedTimePipe, IfFunctionalityDirective,
     AlertService, LoadingService, HttpWrapper, ScimService, SelectProfileGuard } from './shared/index'
 import { IndexComponent, SearchComponent, NoSelectionComponent } from './index/index';
-import { ProfileViewComponent, ProfileEditComponent,
-    RawComponent, RegisterComponent } from './profile/index';
+import { ProfileViewComponent, ProfileEditComponent, RawComponent, RegisterComponent } from './profile/index';
 import { PreferenceViewComponent, CommunicationContentEditComponent, TopicEditComponent } from './preference/index';
 import { ErrorComponent } from './error/index';
 import { Configuration } from './app.config';

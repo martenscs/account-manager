@@ -1,5 +1,8 @@
-#This dsconfig batch file creates the OAuth2 Scope objects within the Data Governance Broker and configures the
-#Web Application Extension and Connection Handler objects for the Data Governance Broker to host the Account Manager Sample.
+#
+# This dsconfig batch file creates the OAuth2 Scope objects within the Data Governance Server and optionally configures
+# the Web Application Extension and Connection Handler objects for the Data Governance Server to host the Account
+# Manager Sample.
+#
 
 dsconfig create-oauth2-scope \
     --scope-name urn:pingidentity:scope:admin:profiles \
@@ -37,7 +40,6 @@ dsconfig create-oauth2-scope \
     --set resource-attribute:userName \
     --set resource-operation:create
 
-
 dsconfig create-oauth2-scope \
     --scope-name urn:pingidentity:scope:admin:entitlements \
     --type resource \
@@ -50,30 +52,24 @@ dsconfig create-oauth2-scope \
     --set resource-operation:search
 
 dsconfig create-oauth2-scope \
-    --scope-name urn:pingidentity:scope:admin:account_state \
-    --type resource \
-    --set "description:Manage account state." \
-    --set scim-resource-type:Users \
-    --set "scim-sub-resource-type:Account State" \
-    --set "resource-attribute:*" \
-    --set resource-operation:retrieve \
-    --set resource-operation:modify
-
-dsconfig create-oauth2-scope \
     --scope-name urn:pingidentity:scope:admin:change_password \
     --type resource \
-    --set "description:Change and reset passwords." \
+    --set "description:Change passwords." \
     --set scim-resource-type:Users \
     --set "resource-attribute:password" \
     --set resource-operation:modify
 
-dsconfig create-web-application-extension \
-    --extension-name "Account Manager" \
-    --set "description:Web Application Extension for hosting the Account Manager sample application." \
-    --set base-context-path:/samples/account-manager \
-    --set war-file:samples/account-manager/account-manager.war \
-    --set deployment-descriptor-file:config/single-page-application-web.xml
-
-dsconfig set-connection-handler-prop \
-    --handler-name "HTTPS Connection Handler" \
-    --add "web-application-extension:Account Manager"
+# Uncomment the following two command to create a Web Application Extension for your customized war file and associate
+# it with the Data Governance Server's HTTPS Connection Handler. Make sure to update the "war-file" parameter value
+# first to point to your war file.
+#
+# dsconfig create-web-application-extension \
+#     --extension-name "Account Manager" \
+#     --set "description:Web Application Extension for hosting the Account Manager sample application." \
+#     --set base-context-path:/samples/account-manager \
+#     --set deployment-descriptor-file:config/single-page-application-web.xml \
+#     --set war-file:samples/account-manager/account-manager.war
+#
+# dsconfig set-connection-handler-prop \
+#     --handler-name "HTTPS Connection Handler" \
+#     --add "web-application-extension:Account Manager"
