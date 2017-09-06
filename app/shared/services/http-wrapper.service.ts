@@ -4,7 +4,7 @@
  */
 
 import { Injectable, Inject } from '@angular/core';
-import { Http, Headers, Response, RequestOptionsArgs, URLSearchParams } from '@angular/http';
+import { Http, Headers, Response, RequestOptionsArgs } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/finally';
 import 'rxjs/add/operator/map';

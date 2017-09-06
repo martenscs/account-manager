@@ -12,8 +12,7 @@ import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/share';
 import 'rxjs/add/observable/empty';
 
-import { Configuration, AlertService, AlertType, HttpWrapper, LoadingService, Utility, Profile,
-    URN_PREFIX, Functionality } from '../index';
+import { Configuration, AlertService, HttpWrapper, Utility, Profile } from '../index';
 
 
 const STORAGE_KEY: any = {
@@ -32,10 +31,6 @@ export class ScimService {
 
   private profile: BehaviorSubject<Profile> = new BehaviorSubject(undefined);
   private _profile$: Observable<Profile> = this.profile.asObservable();
-
-  private accountState: BehaviorSubject<any> = new BehaviorSubject(undefined);
-  private _accountState$: Observable<any> = this.accountState.asObservable();
-
 
   private criticalError: BehaviorSubject<any> = new BehaviorSubject(undefined);
   private _criticalError$: Observable<any> = this.criticalError.asObservable();
@@ -56,8 +51,7 @@ export class ScimService {
   constructor(@Inject(Window) window: Window,
               private configuration: Configuration,
               private alertService: AlertService,
-              private httpWrapper: HttpWrapper,
-              private loadingService: LoadingService) {
+              private httpWrapper: HttpWrapper) {
 
     this.window = window;
 
@@ -67,7 +61,7 @@ export class ScimService {
   init() {
     // process the initial search params when the app/service loads
     var params: Object = HttpWrapper.parseParams(this.window.location.search);
-    var scopes: string[], grantedScopes: string[], parts: string[], jsonToken: any, state: number, uri: string;
+    var grantedScopes: string[], parts: string[], jsonToken: any, state: number, uri: string;
     if (params['chash']) {
       // this is an OAuth callback
       params = HttpWrapper.parseParams(HttpWrapper.decodeCallbackArg(params['chash']));
@@ -78,20 +72,20 @@ export class ScimService {
               'sent with the request (' + this.window.sessionStorage.getItem(STORAGE_KEY.STATE) + ')');
         }
         else {
-            // validate the granted scopes in the JWT token
-            grantedScopes = [];
-            parts = params['access_token'].split('.');
-            if (parts.length === 3) {
-                jsonToken = JSON.parse(atob(parts[1]));
-                if (jsonToken && jsonToken.scope) {
-                    grantedScopes = jsonToken.scope;
-                }
+          // validate the granted scopes in the JWT token
+          grantedScopes = [];
+          parts = params['access_token'].split('.');
+          if (parts.length === 3) {
+            jsonToken = JSON.parse(atob(parts[1]));
+            if (jsonToken && jsonToken.scope) {
+              grantedScopes = jsonToken.scope;
             }
-            this.configuration.grantedScopes = grantedScopes;
-            if (! this.configuration.hasRequiredScopes()) {
-                this.error = this.formatError('The application was not granted the required scopes.  Make sure you are ' +
-                    'signing in with a privileged account.');
-            }
+          }
+          this.configuration.grantedScopes = grantedScopes;
+          if (! this.configuration.hasRequiredScopes()) {
+            this.error = this.formatError('The application was not granted the required scopes.  Make sure you are ' +
+              'signing in with a privileged account.');
+          }
         }
         if (! this.error) {
           this.httpWrapper.bearerToken = params['access_token'];
@@ -120,15 +114,6 @@ export class ScimService {
     return this._profile$;
   }
 
-  get accountState$(): Observable<any> {
-    // lazy-load the state
-    if (! this.accountState.getValue()) {
-      this.fetchAccountState();
-    }
-    return this._accountState$;
-  }
-
-
   get criticalError$(): Observable<any> {
     return this._criticalError$;
   }
@@ -136,14 +121,9 @@ export class ScimService {
   selectProfile(profile: Profile, clearCache = true) {
     if (clearCache) {
       this.profile.next(undefined);
-      this.accountState.next(undefined);
     }
     if (profile) {
       this.profile.next(profile);
-      if (clearCache) {
-        // also, pre-fetch the account state so we have it up front if they disable the account
-        this.fetchAccountState();
-      }
     }
   }
 
@@ -154,16 +134,6 @@ export class ScimService {
   refreshProfile(clearCache = false): Observable<Profile> {
     var o = this.httpWrapper.get(this.getAccountUrl());
     o.subscribe((data: any) => this.selectProfile(new Profile(data), clearCache),
-        this.handleError);
-    return o;
-  }
-
-  fetchAccountState(): Observable<any> {
-    if (! this.profile.getValue() || ! this.configuration.hasRequiredScopes(Functionality.Account)) {
-      return Observable.empty();
-    }
-    var o = this.httpWrapper.get(this.getAccountUrl('account'));
-    o.subscribe((data: any) => this.accountState.next(data),
         this.handleError);
     return o;
   }
@@ -190,7 +160,6 @@ export class ScimService {
         'name.formatted ' + indexedOperation + ' "' + filter + '" or ' +
         'emails.value ' + nonIndexedOperation + ' "' + filter + '" or ' +
         'phoneNumbers.value ' + nonIndexedOperation + ' "' + filter + '"';
-        'name.formatted ' + indexedOperation + ' "' + filter + '" or ';
 
     // NOTE: use CustomQueryEncoder so that we escape any plus signs in the filter
     var params = new URLSearchParams('', new CustomQueryEncoder());
@@ -229,31 +198,6 @@ export class ScimService {
     return o;
   }
 
-  toggleAccountDisabled(disable: boolean): Observable<any> {
-    var data: any = {
-      accountDisabled: disable
-    };
-    var o = this.httpWrapper.put(this.getAccountUrl('account'), JSON.stringify(data));
-    o.subscribe(() => this.fetchAccountState(),
-        this.handleError);
-    return o;
-  }
-
-
-
-  private removeSubjectEntry(subject: BehaviorSubject<any[]>, obj: any): Observable<any> {
-    var o = this.httpWrapper.delete(this.getLocation(obj));
-    o.subscribe(
-        () => {
-          var objects = subject.getValue();
-          objects.splice(objects.indexOf(obj), 1);
-          subject.next(objects);
-        },
-        this.handleError
-    );
-    return o;
-  }
-
   private getUrl(path: string): string {
     return this.httpWrapper.getResourceServerUrl('scim/v2/' + path);
   }
@@ -270,13 +214,6 @@ export class ScimService {
     return url;
   }
 
-  private processRecord(record: any): any {
-    if (record && record.meta && record.meta.lastModified) {
-      record.meta.lastModified = new Date(record.meta.lastModified);
-    }
-    return record;
-  }
-
   private getLocation(record: any): string {
     return (record && record.meta) ? record.meta.location : undefined;
   }
@@ -288,7 +225,7 @@ export class ScimService {
     error = HttpWrapper.parseResponse(error);
     if (error instanceof ProgressEvent) {
       obj.message = 'Close the browser and reload the application. If you continue to see this error, an ' +
-          'administrator should verify the Data Governance Broker CORS configuration.';
+          'administrator should verify the Data Governance Server CORS configuration.';
       obj.details = 'ProgressEvent';
     }
     else if (error.detail) {

@@ -6,9 +6,7 @@ export const template = `
       <div class="form-group">
         <label class="col-sm-2 control-label">Name</label>
         <div class="col-sm-10">
-          <p class="form-control-static">{{ profile.fullName }}
-            <strong *ngIf="accountState && accountState.accountDisabled">(Account Disabled)</strong>
-          </p>
+          <p class="form-control-static">{{ profile.fullName }}</p>
         </div>
       </div>
       <div class="form-group">

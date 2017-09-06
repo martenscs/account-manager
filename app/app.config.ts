@@ -7,31 +7,26 @@ import { Injectable, Inject } from '@angular/core';
 import { Http, Response } from '@angular/http';
 import 'rxjs/add/operator/map';
 
+// NOTE: Override these as needed for deployment (examples below)
+export const IDENTITY_PROVIDER_URL = 'https://my-pingfed-server:9031'; // https://[ping-federate-hostname]:[oath-port]
+export const RESOURCE_SERVER_URL = '/'; // https://[data-governance-hostname]:[https-port]/
+export const CLIENT_REDIRECT_URL = 'https://my-governance-server:8443/samples/account-manager/callback.html'; // https://[data-governance-hostname]:[https-port]/account-manager/callback.html
 
-
-// NOTE: Override these for local development (examples below).
-export const IDENTITY_PROVIDER_URL = 'https://my-pingfed-server:9031'; // https://[ping-federate-hostname]:[oath-port]'
-export const CLIENT_REDIRECT_URL = '/samples/account-manager/callback.html'; // https://[data-governance-hostname]:[https-port]/callback.html
-export const RESOURCE_SERVER_URL = '/'; // https://[data-governance-hostname]:[https-port]
-
+// NOTE: These should not need to be changed for a typical deployment
 export const IDENTITY_PROVIDER_AUTH_ENDPOINT = 'as/authorization.oauth2';
 export const IDENTITY_PROVIDER_LOGOUT_ENDPOINT = '/idp/startSLO.ping';
-
-
 export const CLIENT_ID = '@account-manager@';
 export const URN_PREFIX = 'urn:pingidentity:';
 export const SCOPE_PREFIX = URN_PREFIX + 'scope:admin:';
 
-export enum Functionality { Register, Account, Entitlements, Password }
+export enum Functionality { Register, Entitlements, Password }
 
 export const REQUIRED_SCOPES = [ SCOPE_PREFIX + 'profiles' ];
 
 export const OPTIONAL_SCOPES_BY_FUNCTIONALITY = {};
 OPTIONAL_SCOPES_BY_FUNCTIONALITY[Functionality.Register] = [ SCOPE_PREFIX + 'register_account' ];
-OPTIONAL_SCOPES_BY_FUNCTIONALITY[Functionality.Account] = [ SCOPE_PREFIX + 'account_state' ];
 OPTIONAL_SCOPES_BY_FUNCTIONALITY[Functionality.Entitlements] = [ SCOPE_PREFIX + 'entitlements' ];
-OPTIONAL_SCOPES_BY_FUNCTIONALITY[Functionality.Password] = [SCOPE_PREFIX + 'change_password'];
-
+OPTIONAL_SCOPES_BY_FUNCTIONALITY[Functionality.Password] = [ SCOPE_PREFIX + 'change_password' ];
 
 @Injectable()
 export class Configuration {
@@ -66,7 +61,7 @@ export class Configuration {
   }
 
   hasRequiredScopes(f?: Functionality): boolean {
-    var brokerOnly: boolean, requiredScopes: string[], i: number;
+    var requiredScopes: string[], i: number;
 
     // check either the required scopes or the given functionality's scopes
     requiredScopes = f !== undefined ? OPTIONAL_SCOPES_BY_FUNCTIONALITY[f] : REQUIRED_SCOPES;

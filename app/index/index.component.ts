@@ -19,16 +19,13 @@ export class IndexComponent implements OnInit, OnDestroy  {
   // results to template local variables:
   //    https://github.com/angular/angular/issues/2451
   private profileSubscription: Subscription;
-  private accountStateSubscription: Subscription;
   private routeSubscription: any;
 
   profile: Profile;
-  accountState: any;
 
   searchFilter: string;
   showSearch = false;
   showActions = false;
-  showConfirmDisable = false;
 
   functionalityEnum = Functionality;
 
@@ -47,10 +44,6 @@ export class IndexComponent implements OnInit, OnDestroy  {
           }
         });
 
-    // update account state for disable/enable action
-    this.accountStateSubscription = this.scimService.accountState$
-        .subscribe((accountState: any) => this.accountState = accountState);
-
     // hide the actions on route change
     this.routeSubscription = this.router.events.subscribe((event: Event) => {
       if (event instanceof NavigationStart) {
@@ -63,9 +56,6 @@ export class IndexComponent implements OnInit, OnDestroy  {
     if (this.profileSubscription) {
       this.profileSubscription.unsubscribe();
     }
-    if (this.accountStateSubscription) {
-      this.accountStateSubscription.unsubscribe();
-    }
     if (this.routeSubscription) {
       this.routeSubscription.unsubscribe();
     }
@@ -77,22 +67,6 @@ export class IndexComponent implements OnInit, OnDestroy  {
     }
     this.searchFilter = '';
     this.showSearch = false;
-  }
-
-  toggleDisabled() {
-    if (this.accountState.accountDisabled) {
-      this.scimService.toggleAccountDisabled(false);
-    }
-    else {
-      this.showConfirmDisable = true;
-    }
-  }
-
-  disableConfirmClosed(confirm: boolean) {
-    if (confirm) {
-      this.scimService.toggleAccountDisabled(true);
-    }
-    this.showConfirmDisable = false;
   }
 
   refresh() {
