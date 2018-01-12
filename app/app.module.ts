@@ -1,5 +1,5 @@
 /**
- * Copyright 2016-2017 Ping Identity Corporation
+ * Copyright 2016-2018 Ping Identity Corporation
  * All Rights Reserved.
  */
 
